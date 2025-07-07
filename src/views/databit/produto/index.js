@@ -5,7 +5,8 @@ import ReactImageMagnify from 'react-image-magnify';
 import PerfectScrollbar from 'react-perfect-scrollbar';
 import Carousel from 'react-multi-carousel';
 import 'react-multi-carousel/lib/styles.css';
-import { apiGetPicturelist } from 'datareact/src/api/crudapi';
+import { useToasts } from 'react-toast-notifications';
+import { apiGetPicturelist, apiFind, apiInsert } from 'datareact/src/api/crudapi';
 import { LoadingOverlay } from '../../../utils/databit/screenprocess';
 import { Decode64 } from 'datareact/src/utils/crypto';
 import { capitalizeText } from 'datareact/src/utils/capitalize';
@@ -13,9 +14,11 @@ import { StarRatingView } from '../../../components/StarRatingView';
 import { SelectorNumber } from '../../../components/SelectorNumber';
 import ProdutoSuprimento from './suprimento';
 import { CompartilharProduto } from './compartilhar';
+import ProdutoAvaliacao from './avaliacao';
 
 const Produto = (props) => {
   const location = useLocation();
+  const { addToast } = useToasts();
   const [itemselec, setItemselec] = React.useState([]);
   const [loading, setLoading] = React.useState(false);
   const [foto, setFoto] = React.useState();
@@ -115,7 +118,6 @@ const Produto = (props) => {
       'S'
     );
     if (response.status === 200) {
-      console.log(response.data);
       setItemselec(response.data[0]);
     }
     setLoading(false);
@@ -280,15 +282,11 @@ const Produto = (props) => {
       <Button className="color-button-primary w-100 mb-2">
         <i className="feather icon-shopping-cart" /> Adicionar ao Carrinho
       </Button>
-      <Button className="color-button-primary w-100 mb-2">
+      <Button className="color-button-primary w-100 mb-2" onClick={() => addFavorito()}>
         <i className="feather icon-heart" /> Adicionar aos Favoritos
       </Button>
       <Button className="color-button-primary w-100 mb-2" onClick={() => setCompartilharAberto(!compartilharAberto)}>
         <i className="feather icon-share-2" /> Compartilhar
-      </Button>
-
-      <Button className="color-button-primary w-100 mb-2">
-        <i className="feather icon-star" /> Avalie este Produto
       </Button>
     </Col>
   );
@@ -300,6 +298,41 @@ const Produto = (props) => {
       </div>
     </Col>
   );
+
+  const addFavorito = async () => {
+    const client = Decode64(sessionStorage.getItem('client'));
+    setLoading(true);
+    const responsefind = await apiFind(
+      'ProdutoFavorito',
+      '*',
+      '',
+      "TB01164_PRODUTO = '" + itemselec.codigo + "' and TB01164_CODCLI = '" + client + "' "
+    );
+    if (responsefind.status === 200) {
+      if (responsefind.data) {
+        setLoading(false);
+        addToast('Produto já adiciondo anteriormente !', {
+          placement: 'bottom-rigth',
+          appearance: 'success',
+          autoDismiss: true
+        });
+      } else {
+        const item = {
+          produto: itemselec.codigo,
+          codcli: client
+        };
+        const responseinsert = await apiInsert('ProdutoFavorito', item);
+        if (responseinsert.status === 200) {
+          setLoading(false);
+          addToast('Produto adiciondo com SUCESSO !', {
+            placement: 'bottom-rigth',
+            appearance: 'success',
+            autoDismiss: true
+          });
+        }
+      }
+    }
+  };
 
   return (
     <React.Fragment>
@@ -325,6 +358,7 @@ const Produto = (props) => {
       </div>
 
       <ProdutoSuprimento produto={itemselec.codigo} tiposup={itemselec.tiposup}></ProdutoSuprimento>
+      <ProdutoAvaliacao produto={itemselec.codigo}></ProdutoAvaliacao>
 
       {loading && <LoadingOverlay />}
     </React.Fragment>

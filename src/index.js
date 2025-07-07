@@ -5,6 +5,8 @@ import 'react-app-polyfill/stable';
 import { createRoot } from 'react-dom/client';
 import { Provider } from 'react-redux';
 import { ConfigProvider } from './contexts/ConfigContext';
+import { ToastProvider } from 'react-toast-notifications';
+import CustomToast from './components/CustomToast';
 
 import './index.scss';
 import App from './App';
@@ -55,6 +57,7 @@ checkFileExists(configUrl).then((exists) => {
         sessionStorage.setItem('tablePrice', Encode64(data.tablePrice));
         sessionStorage.setItem('typeObs', Encode64(data.typeObs.toString()));
         sessionStorage.setItem('priceLogin', Encode64(data.priceLogin.toString()));
+        sessionStorage.setItem('user', Encode64('DATASTORE'));
 
         document.title = data.title;
         DATABIT.islogged = false;
@@ -109,7 +112,9 @@ checkFileExists(configUrl).then((exists) => {
         root.render(
           <Provider store={store}>
             <ConfigProvider>
-              <App />
+              <ToastProvider placement="bottom-right" autoDismiss autoDismissTimeout={3000} components={{ Toast: CustomToast }}>
+                <App />
+              </ToastProvider>
             </ConfigProvider>
           </Provider>
         );

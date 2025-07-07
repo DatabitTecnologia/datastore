@@ -34,6 +34,7 @@
     "react-redux": "^8.1.0",
     "react-router-dom": "^6.12.1",
     "react-scripts": "5.0.1",
+    "react-toast-notifications": "^2.5.1",
     "redux": "^4.2.1",
     "redux-form": "^8.3.10",
     "rodal": "^2.0.1",

@@ -475,6 +475,10 @@ body,
   background: var(--colorMenuselec);
 }
 
+.color-button-primary:focus {
+  background: var(--colorMenuselec);
+}
+
 .pcoded-inner-navbar {
   color: var(--colorMenuselec) !important;
 }
@@ -651,23 +655,6 @@ body,
   border-top: 1px solid;
   border-color: var(--colorButtonfooter);
   padding-top: 10px;
-}
-
-.input-classic {
-  width: 100%;
-  padding: 10px 12px;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  font-size: 15px;
-  color: #333;
-  background-color: #fff;
-  transition: border 0.3s ease;
-}
-
-.input-classic:focus {
-  border-color: var(--colorMenu);
-  border: 2px solid var(--colorMenu);
-  outline: none;
 }
 
 .label-default {
@@ -895,7 +882,107 @@ body,
   flex-shrink: 0;
   width: 8px;
   height: 8px;
-  background-color: #007bff; /* cor da bolinha */
+  background-color: var(--colorMenu); /* cor da bolinha */
   border-radius: 50%;
   margin-top: 4px; /* ajusta a distância vertical da bolinha */
+}
+
+.custom-radio-group {
+  display: flex;
+  gap: 30px; /* espaço entre os radios */
+  align-items: center;
+}
+
+.custom-radio {
+  position: relative;
+  padding-left: 30px;
+  cursor: pointer;
+  font-size: 1rem;
+  user-select: none;
+}
+
+.custom-radio input[type='radio'] {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.custom-radio::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 3px;
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--colorMenu);
+  border-radius: 50%;
+  background-color: white;
+}
+
+.custom-radio input[type='radio']:checked + span::after {
+  content: '';
+  position: absolute;
+  left: 6px;
+  top: 9px;
+  width: 8px;
+  height: 8px;
+  background-color: var(--colorMenu);
+  border-radius: 50%;
+}
+
+.input {
+  padding: 10px 12px !important;
+  border: 1px solid #ccc;
+  border-radius: 6px !important;
+  font-size: 15px !important;
+  outline: none;
+}
+
+.textarea {
+  padding: 10px 12px !important;
+  border: 1px solid #ccc;
+  border-radius: 6px !important;
+  font-size: 15px !important;
+  outline: none;
+}
+
+input:focus,
+textarea:focus {
+  padding: 10px 12px !important;
+  border: 1px solid #ccc;
+  border-radius: 6px !important;
+  font-size: 15px !important;
+  box-shadow: 0 0 0 0.1rem var(--colorMenu) !important;
+  outline: none;
+}
+
+// Exemplo para o tipo 'success'
+.react-toast-notification.appearance-success {
+  background-color: #000 !important;
+  color: white;
+  border-left: 5px solid #145c32;
+}
+
+.react-toast-notification.appearance-error {
+  background-color: #dc3545 !important;
+  color: white;
+  border-left: 5px solid #7a1b1b;
+}
+
+.react-toast-notification.appearance-warning {
+  background-color: #ffc107 !important;
+  color: black;
+  border-left: 5px solid #b88a00;
+}
+
+.react-toast-notification.appearance-info {
+  background-color: #0d6efd !important;
+  color: white;
+  border-left: 5px solid #084298;
+}
+
+.react-toast-notification {
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  font-family: 'Segoe UI', sans-serif;
 }
