@@ -2,9 +2,11 @@ import React, { useContext, useState } from 'react';
 import { ConfigContext } from '../../../../contexts/ConfigContext';
 import useAuth from '../../../../hooks/useAuth';
 import { ListGroup, Row, Col, Button } from 'react-bootstrap';
+import { useNavigate } from 'react-router-dom';
 
 const NavRight = () => {
   const configContext = useContext(ConfigContext);
+  const navigate = useNavigate();
   const { logout } = useAuth();
   const [user, setUser] = useState(null);
   const [cartCount, setCartCount] = useState(4); // Exemplo: 3 itens no carrinho
@@ -59,11 +61,13 @@ const NavRight = () => {
           title="Login"
           style={{ cursor: 'pointer', background: 'transparent', border: 'none', padding: '0 1rem' }}
           className="d-flex align-items-center"
+          onClick={() => navigate('/login')}
         >
           <i className="feather icon-user" style={{ fontSize: '1.7rem', marginRight: '8px', color: '#fff' }} />
           <span style={{ fontSize: '1rem', color: '#fff' }}>{user ? user.nome : 'Fazer Login'}</span>
         </ListGroup.Item>
       </ListGroup>
+      {/*
       {openDropdown && (
         <Row
           style={{
@@ -83,7 +87,7 @@ const NavRight = () => {
           onMouseEnter={openDropdownFn}
           onMouseLeave={closeDropdown}
         >
-          {/* Conteúdo do dropdown */}
+
           <div style={{ backgroundColor: sessionStorage.getItem('colorMenuselec'), color: '#fff' }}>
             <span>Carrinho de Compras</span>
           </div>
@@ -98,8 +102,8 @@ const NavRight = () => {
               </Button>
             </Col>
           </Row>
-        </Row>
-      )}
+        </Row> 
+      )}*/}
     </div>
   );
 };

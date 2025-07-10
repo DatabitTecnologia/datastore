@@ -35,12 +35,6 @@ export const renderRoutes = (routes = []) => (
 
 const routes = [
   {
-    exact: 'true',
-    layout: AdminLayout,
-    path: '/',
-    element: lazy(() => import('./views/databit/principal'))
-  },
-  {
     layout: AdminLayout,
     exact: 'true',
     path: '/filter',
@@ -65,6 +59,24 @@ const routes = [
     element: lazy(() => import('./views/databit/revendedor/localizacao'))
   },
   {
+    layout: AdminLayout,
+    exact: 'true',
+    path: '/login',
+    element: lazy(() => import('./views/databit/login'))
+  },
+  {
+    layout: AdminLayout,
+    exact: 'true',
+    path: '/loginreset',
+    element: lazy(() => import('./views/databit/login/reset'))
+  },
+  {
+    layout: AdminLayout,
+    exact: 'true',
+    path: '/newpass',
+    element: lazy(() => import('./views/databit/login/newpass'))
+  },
+  {
     exact: 'true',
     path: '/404',
     element: lazy(() => import('./views/errors/NotFound404'))
@@ -85,11 +97,13 @@ const routes = [
     element: lazy(() => import('./views/maintenance/OfflineUI'))
   },
   {
+    layout: AdminLayout,
     exact: 'true',
     path: '/auth/signin-1',
     element: lazy(() => import('./views/auth/signin/SignIn1'))
   },
   {
+    layout: AdminLayout,
     exact: 'true',
     path: '/auth/signup-1',
     element: lazy(() => import('./views/auth/signup/SignUp1'))

@@ -45,7 +45,6 @@ const CarouselDestaque = () => {
       'S'
     ).then((response) => {
       if (response.status === 200) {
-        console.log(response.data);
         setRows(response.data);
         setLoading(false);
       }
