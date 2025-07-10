@@ -206,7 +206,7 @@ export const gerarMenurevenda = async () => {
         type: 'item',
         icon: 'feather icon-shopping-cart',
         classes: 'nav-item',
-        url: '/filter',
+        url: '/revendedor',
         target: false
       }
     ]
@@ -223,7 +223,7 @@ export const gerarMenurevenda = async () => {
         type: 'item',
         icon: 'feather icon-map',
         classes: 'nav-item',
-        url: '/filter',
+        url: '/localizacao',
         target: false
       }
     ]

@@ -760,7 +760,6 @@ body,
 .dropdown-label {
   margin-bottom: 6px;
   font-weight: 400;
-  color: #333;
 }
 
 .dropdown-select {
@@ -796,6 +795,16 @@ body,
   justify-content: 'center';
   align-items: 'center';
   z-index: 9999;
+}
+
+.label-destaque-12 {
+  flex-direction: column;
+  margin: 10px 0;
+  font-family: 'Segoe UI', sans-serif;
+  margin-bottom: 6px;
+  font-weight: 500;
+  color: #333;
+  font-size: 12px;
 }
 
 .label-destaque-14 {

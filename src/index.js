@@ -49,7 +49,7 @@ checkFileExists(configUrl).then((exists) => {
         sessionStorage.setItem('nameenterprise', Encode64(data.nameenterprise));
         sessionStorage.setItem('coddatabit', Encode64(data.coddatabit));
         sessionStorage.setItem('url', Encode64(data.url));
-        sessionStorage.setItem('parceiro', data.parceiro);
+        sessionStorage.setItem('parceiro', Encode64(data.parceiro));
         sessionStorage.setItem('operation', Encode64(data.operation));
         sessionStorage.setItem('payment', Encode64(data.payment));
         sessionStorage.setItem('client', Encode64(data.client));
@@ -58,6 +58,14 @@ checkFileExists(configUrl).then((exists) => {
         sessionStorage.setItem('typeObs', Encode64(data.typeObs.toString()));
         sessionStorage.setItem('priceLogin', Encode64(data.priceLogin.toString()));
         sessionStorage.setItem('user', Encode64('DATASTORE'));
+        sessionStorage.setItem('from', Encode64(data.email));
+        sessionStorage.setItem('fromname', Encode64(data.emailName));
+        sessionStorage.setItem('username', Encode64(data.emailUser));
+        sessionStorage.setItem('smtp', Encode64(data.emailSmtp));
+        sessionStorage.setItem('ssm', Encode64(data.emailPass));
+        sessionStorage.setItem('port', data.emailPort);
+        sessionStorage.setItem('tls', Encode64(data.emailTls.toString()));
+        sessionStorage.setItem('fromseller', Encode64(data.emailRevenda));
 
         document.title = data.title;
         DATABIT.islogged = false;

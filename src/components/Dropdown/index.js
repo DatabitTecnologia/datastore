@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-const Dropdown = ({ options, label, onChange }) => {
+const Dropdown = ({ options, label, onChange, style }) => {
   const [selected, setSelected] = useState('');
 
   const handleChange = (e) => {
@@ -12,7 +12,7 @@ const Dropdown = ({ options, label, onChange }) => {
   };
 
   return (
-    <div className="dropdown-container">
+    <div className="dropdown-container" style={style}>
       {label && <label className="dropdown-label">{label}</label>}
       <select className="dropdown-select" value={selected} onChange={handleChange}>
         {options.map((opt) => (

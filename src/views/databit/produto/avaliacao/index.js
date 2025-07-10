@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Row, Col, Button, Card, Modal, ModalBody, ModalFooter } from 'react-bootstrap';
+import { Row, Col, Button, Card, Modal, ModalBody } from 'react-bootstrap';
 import { FaThumbsUp, FaThumbsDown, FaCheckCircle, FaTimesCircle } from 'react-icons/fa';
 import { apiList, apiUpdate } from 'datareact/src/api/crudapi';
 import { StarRatingView } from '../../../../components/StarRatingView';

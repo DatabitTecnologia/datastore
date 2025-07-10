@@ -33,5 +33,13 @@
   "client": "00000000",
   "consumption": "S",
   "tablePrice": "01",
-  "typeObs": 2
+  "typeObs": 2,
+  "email": "sistemas@databit.com.br",
+  "emailSmtp": "smtp.office365.com",
+  "emailUser": "sistemas@databit.com.br",
+  "emailPass": "Databit@#2023",
+  "emailPort": 587,
+  "emailName": "Sidney Sanches",
+  "emailTls": 1,
+  "emailRevenda": "sidsanches@gmail.com"
 }

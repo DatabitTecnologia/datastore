@@ -53,6 +53,18 @@ const routes = [
     element: lazy(() => import('./views/databit/produto'))
   },
   {
+    layout: AdminLayout,
+    exact: 'true',
+    path: '/revendedor',
+    element: lazy(() => import('./views/databit/revendedor'))
+  },
+  {
+    layout: AdminLayout,
+    exact: 'true',
+    path: '/localizacao',
+    element: lazy(() => import('./views/databit/revendedor/localizacao'))
+  },
+  {
     exact: 'true',
     path: '/404',
     element: lazy(() => import('./views/errors/NotFound404'))
