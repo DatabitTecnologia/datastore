@@ -6,6 +6,7 @@ import { StarRatingView } from '../../../../components/StarRatingView';
 import { LoadingOverlay } from '../../../../utils/databit/screenprocess';
 import user from '../../../../assets/images/databit/user.png';
 import ProdutoAvaliacaoModal from './modal';
+import { DATABIT } from '../../../../config/constant';
 
 const ProdutoAvaliacao = (props) => {
   const { produto } = props;
@@ -165,9 +166,11 @@ const ProdutoAvaliacao = (props) => {
           </Col>
 
           <Col md={4}>
-            <Button className="color-button-primary w-100 mb-3" onClick={() => setShowavalia(true)}>
-              <i className="feather icon-star" /> Avalie este Produto
-            </Button>
+            {DATABIT.islogged && (
+              <Button className="color-button-primary w-100 mb-3" onClick={() => setShowavalia(true)}>
+                <i className="feather icon-star" /> Avalie este Produto
+              </Button>
+            )}
             <Card className="Recent-Users" id="frmavaliacao" name="frmavaliacao" style={{ borderRadius: '12px' }}>
               <Card.Header>
                 <Card.Title as="h5">Resumo das Avaliações</Card.Title>

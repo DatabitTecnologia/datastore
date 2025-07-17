@@ -128,7 +128,7 @@ Observação: ${form.obs}
   };
 
   return (
-    <div className="container my-1" style={{ maxWidth: '1300px' }}>
+    <div>
       <Card style={{ borderRadius: '12px' }}>
         <Card.Header>
           <Card.Title as="h5">Formulário de Revendedor</Card.Title>

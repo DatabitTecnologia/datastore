@@ -137,7 +137,7 @@ const NavLeft = () => {
         <ListGroup.Item as="li" bsPrefix=" ">
           <input
             id="edtprocurar"
-            style={{ width: '680px' }}
+            style={{ width: '610px' }}
             onChange={(e) => handleChangefilter(e)}
             className="form-control"
             placeholder="Opção à procurar"

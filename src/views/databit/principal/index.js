@@ -3,7 +3,6 @@ import { Card } from 'react-bootstrap';
 import CarouselDestaque from '../carousel/destaque';
 import CarouselMarca from '../carousel/marca';
 import ViewGrupo from '../grupo';
-
 const Principal = () => {
   return (
     <React.Fragment>

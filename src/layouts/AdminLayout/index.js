@@ -10,6 +10,7 @@ import useOutsideClick from '../../hooks/useOutsideClick';
 import { ConfigContext } from '../../contexts/ConfigContext';
 import * as actionType from '../../store/actions';
 import Footer from '../../views/databit/footer';
+import { DATABIT } from '../../config/constant';
 
 const AdminLayout = ({ children }) => {
   const windowSize = useWindowSize();
@@ -55,13 +56,29 @@ const AdminLayout = ({ children }) => {
 
   let mainContainer = (
     <React.Fragment>
-      <div style={{ marginTop: '140px' }}>
-        <div className="pcoded-main-container-db">
-          <div className={mainClass.join(' ')}>
-            <div className="pcoded-content">
-              <div className="pcoded-inner-content">
-                <Breadcrumb />
-                {children}
+      <div
+        style={{
+          minHeight: '100vh',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center'
+        }}
+      >
+        <div
+          style={{
+            maxWidth: '1300px',
+            width: '100%',
+            padding: '20px',
+            marginTop: DATABIT.islogged ? '214px' : '120px'
+          }}
+        >
+          <div className="">
+            <div className={mainClass.join(' ')}>
+              <div className="pcoded-content">
+                <div className="pcoded-inner-content">
+                  <Breadcrumb />
+                  {children}
+                </div>
               </div>
             </div>
           </div>
@@ -69,7 +86,6 @@ const AdminLayout = ({ children }) => {
       </div>
     </React.Fragment>
   );
-
   if (windowSize.width < 992) {
     let outSideClass = ['nav-outside'];
     if (collapseMenu) {
@@ -101,6 +117,7 @@ const AdminLayout = ({ children }) => {
   return (
     <React.Fragment>
       {common}
+
       {mainContainer}
       {configBlock}
       <Footer></Footer>

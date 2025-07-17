@@ -7,6 +7,7 @@ import { apiGetPicturelist } from 'datareact/src/api/crudapi';
 import { capitalizeText } from 'datareact/src/utils/capitalize';
 import { Decode64 } from 'datareact/src/utils/crypto';
 import { LoadingOverlay } from '../../../../utils/databit/screenprocess';
+import { DATABIT } from '../../../../config/constant';
 
 const CarouselDestaque = () => {
   const navigate = useNavigate();
@@ -21,7 +22,7 @@ const CarouselDestaque = () => {
     const payment = Decode64(sessionStorage.getItem('payment'));
     const client = Decode64(sessionStorage.getItem('client'));
     const consumption = Decode64(sessionStorage.getItem('consumption'));
-    const tablePrice = Decode64(sessionStorage.getItem('tablePrice'));
+    const tableprice = Decode64(sessionStorage.getItem('tableprice'));
 
     apiGetPicturelist(
       "FT02021('" +
@@ -35,7 +36,7 @@ const CarouselDestaque = () => {
         "','" +
         consumption +
         "','" +
-        tablePrice +
+        tableprice +
         "','S',null,'S')",
       'codigo',
       'foto',
@@ -114,13 +115,15 @@ const CarouselDestaque = () => {
                 <span className="label-destaque-16" style={{ textAlign: 'center' }}>
                   {capitalizeText(item.nome)}
                 </span>
-                <span className="color-price" style={{ textAlign: 'right', fontSize: '25px', marginRight: '100px' }}>
-                  R${' '}
-                  {item.venda.toLocaleString('pt-BR', {
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2
-                  })}
-                </span>
+                {DATABIT.islogged && (
+                  <span className="color-price" style={{ textAlign: 'right', fontSize: '25px', marginRight: '100px' }}>
+                    R${' '}
+                    {item.venda.toLocaleString('pt-BR', {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2
+                    })}
+                  </span>
+                )}
               </Row>
             </div>
           ))}

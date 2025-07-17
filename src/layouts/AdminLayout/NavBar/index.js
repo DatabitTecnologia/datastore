@@ -8,6 +8,7 @@ import NavRight from './NavRight';
 import { ConfigContext } from '../../../contexts/ConfigContext';
 import * as actionType from '../../../store/actions';
 import { Decode64 } from 'datareact/src/utils/crypto';
+import PainelFinanceiro from '../../../views/databit/carousel/financeiro';
 
 const NavBar = () => {
   const [moreToggle, setMoreToggle] = useState(false);

@@ -114,17 +114,19 @@ const NavContent = ({ navigation, navigationright }) => {
             {navItems}
           </ListGroup>
 
-          <ListGroup
-            variant="flush"
-            bsPrefix=" "
-            as="ul"
-            id="sidenav-horizontal"
-            className="nav pcoded-inner-navbar sidenav-inner"
-            onMouseLeave={() => dispatch({ type: actionType.NAV_CONTENT_LEAVE })}
-            style={scrollStyle}
-          >
-            {navItemsright}
-          </ListGroup>
+          {navItemsright.length > 0 && (
+            <ListGroup
+              variant="flush"
+              bsPrefix=" "
+              as="ul"
+              id="sidenav-horizontal"
+              className="nav pcoded-inner-navbar sidenav-inner"
+              onMouseLeave={() => dispatch({ type: actionType.NAV_CONTENT_LEAVE })}
+              style={scrollStyle}
+            >
+              {navItemsright}
+            </ListGroup>
+          )}
         </div>
         <Link to="#" className={nextClass.join(' ')} onClick={scrollNextHandler}>
           <span />

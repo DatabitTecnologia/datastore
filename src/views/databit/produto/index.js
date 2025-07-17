@@ -15,6 +15,8 @@ import { SelectorNumber } from '../../../components/SelectorNumber';
 import ProdutoSuprimento from './suprimento';
 import { CompartilharProduto } from './compartilhar';
 import ProdutoAvaliacao from './avaliacao';
+import { DATABIT } from '../../../config/constant';
+import { adicionarCarrinho } from '../../../utils/databit/carrinho';
 
 const Produto = (props) => {
   const location = useLocation();
@@ -92,7 +94,7 @@ const Produto = (props) => {
     const payment = Decode64(sessionStorage.getItem('payment'));
     const client = Decode64(sessionStorage.getItem('client'));
     const consumption = Decode64(sessionStorage.getItem('consumption'));
-    const tablePrice = Decode64(sessionStorage.getItem('tablePrice'));
+    const tableprice = Decode64(sessionStorage.getItem('tableprice'));
 
     const response = await apiGetPicturelist(
       "FT02021('" +
@@ -106,7 +108,7 @@ const Produto = (props) => {
         "','" +
         consumption +
         "','" +
-        tablePrice +
+        tableprice +
         "','N', '" +
         produto +
         "','S')",
@@ -133,8 +135,8 @@ const Produto = (props) => {
     setLoading(false);
   };
 
-  const typeObs = (item) => {
-    switch (parseInt(Decode64(sessionStorage.getItem('typeObs')))) {
+  const typeobs = (item) => {
+    switch (parseInt(Decode64(sessionStorage.getItem('typeobs')))) {
       case 1: {
         return item.obs;
       }
@@ -194,7 +196,7 @@ const Produto = (props) => {
         options={{ suppressScrollX: true, suppressScrollY: false }}
         style={{ width: '100%', height: '340px', marginTop: '10px' }}
       >
-        <p style={{ fontSize: '0.9rem', marginLeft: '2px', marginRight: '2px' }}>{typeObs(itemselec)}</p>
+        <p style={{ fontSize: '0.9rem', marginLeft: '2px', marginRight: '2px' }}>{typeobs(itemselec)}</p>
       </PerfectScrollbar>
     </Col>
   );
@@ -202,28 +204,31 @@ const Produto = (props) => {
   const precoProduto = (
     <Col lg={3}>
       <Row style={{ marginTop: '170px' }}>
-        <div style={{ textAlign: 'center', marginBottom: '30px' }}>
-          <span
-            style={{
-              fontSize: '3rem',
-              color: sessionStorage.getItem('colorPrice'),
-              fontWeight: '700'
-            }}
-          >
-            R${' '}
-            {(itemselec.venda ?? 0).toLocaleString('pt-BR', {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2
-            })}
-          </span>
-        </div>
-
-        <div style={{ textAlign: 'center' }}>
-          <label style={{ fontWeight: 'bold', display: 'block' }}>Quantidade</label>
-          <div style={{ marginLeft: '70px' }}>
-            <SelectorNumber value={quantidade} setValue={setQuantidade} />
+        {DATABIT.islogged && (
+          <div style={{ textAlign: 'center', marginBottom: '30px' }}>
+            <span
+              style={{
+                fontSize: '3rem',
+                color: sessionStorage.getItem('colorPrice'),
+                fontWeight: '700'
+              }}
+            >
+              R${' '}
+              {(itemselec.venda ?? 0).toLocaleString('pt-BR', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+              })}
+            </span>
           </div>
-        </div>
+        )}
+        {DATABIT.islogged && (
+          <div style={{ textAlign: 'center' }}>
+            <label style={{ fontWeight: 'bold', display: 'block' }}>Quantidade</label>
+            <div style={{ marginLeft: '70px' }}>
+              <SelectorNumber value={quantidade} setValue={setQuantidade} />
+            </div>
+          </div>
+        )}
       </Row>
     </Col>
   );
@@ -279,12 +284,16 @@ const Produto = (props) => {
   const botoesProduto = (
     <Col lg={3}>
       {/* Preço e Quantidade no topo */}
-      <Button className="color-button-primary w-100 mb-2">
-        <i className="feather icon-shopping-cart" /> Adicionar ao Carrinho
-      </Button>
-      <Button className="color-button-primary w-100 mb-2" onClick={() => addFavorito()}>
-        <i className="feather icon-heart" /> Adicionar aos Favoritos
-      </Button>
+      {DATABIT.islogged && (
+        <Button className="color-button-primary w-100 mb-2" onClick={() => addCarrinho()}>
+          <i className="feather icon-shopping-cart" /> Adicionar ao Carrinho
+        </Button>
+      )}
+      {DATABIT.islogged && (
+        <Button className="color-button-primary w-100 mb-2" onClick={() => addFavorito()}>
+          <i className="feather icon-heart" /> Adicionar aos Favoritos
+        </Button>
+      )}
       <Button className="color-button-primary w-100 mb-2" onClick={() => setCompartilharAberto(!compartilharAberto)}>
         <i className="feather icon-share-2" /> Compartilhar
       </Button>
@@ -324,14 +333,27 @@ const Produto = (props) => {
         const responseinsert = await apiInsert('ProdutoFavorito', item);
         if (responseinsert.status === 200) {
           setLoading(false);
-          addToast('Produto adiciondo com SUCESSO !', {
+          addToast('Produto adicionado com SUCESSO !', {
             placement: 'bottom-rigth',
             appearance: 'success',
             autoDismiss: true
           });
+          window.dispatchEvent(new Event('favoritosAtualizado'));
         }
       }
     }
+  };
+
+  const addCarrinho = async () => {
+    setLoading(true);
+    await adicionarCarrinho(itemselec, quantidade);
+    setLoading(false);
+    addToast('Produto adicionado com SUCESSO !', {
+      placement: 'bottom-rigth',
+      appearance: 'success',
+      autoDismiss: true
+    });
+    window.dispatchEvent(new Event('carrinhoAtualizado'));
   };
 
   return (

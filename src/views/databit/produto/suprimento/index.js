@@ -6,6 +6,7 @@ import { capitalizeText } from 'datareact/src/utils/capitalize';
 import { Decode64 } from 'datareact/src/utils/crypto';
 import { StarRatingView } from '../../../../components/StarRatingView';
 import { LoadingOverlay } from '../../../../utils/databit/screenprocess';
+import { DATABIT } from '../../../../config/constant';
 
 const ProdutoSuprimento = (props) => {
   const navigate = useNavigate();
@@ -24,7 +25,7 @@ const ProdutoSuprimento = (props) => {
     const payment = Decode64(sessionStorage.getItem('payment'));
     const client = Decode64(sessionStorage.getItem('client'));
     const consumption = Decode64(sessionStorage.getItem('consumption'));
-    const tablePrice = Decode64(sessionStorage.getItem('tablePrice'));
+    const tableprice = Decode64(sessionStorage.getItem('tableprice'));
     let filter = '';
     if (tiposup === 9 || tiposup === 11) {
       filter =
@@ -50,7 +51,7 @@ const ProdutoSuprimento = (props) => {
         "','" +
         consumption +
         "','" +
-        tablePrice +
+        tableprice +
         "','N',null,'S')",
       'codigo',
       'foto',
@@ -103,9 +104,15 @@ const ProdutoSuprimento = (props) => {
                   style={{ width: '130px', height: '130px', marginBottom: '10px' }}
                 />
                 <span style={{ fontSize: '0.9rem', fontWeight: '500' }}>{capitalizeText(item.nome.substring(0, 50))}</span>
-                <span className="color-price" style={{ fontSize: '1.5rem', marginTop: '5px', textAlign: 'right' }}>
-                  R$ {item.venda.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
-                </span>
+                {DATABIT.islogged ||
+                  (parseInt(Decode64(sessionStorage.getItem('pricelogin'))) === 1 && (
+                    <div style={{ textAlign: 'right' }}>
+                      <span className="color-price" style={{ fontSize: '1.5rem', marginTop: '5px', textAlign: 'right' }}>
+                        R$ {item.venda.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                      </span>
+                    </div>
+                  ))}
+
                 <StarRatingView rating={item.avaliacao ?? 0} size={12} />
               </Row>
             </Col>

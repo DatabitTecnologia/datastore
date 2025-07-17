@@ -6,6 +6,8 @@ import useWindowSize from '../../../hooks/useWindowSize';
 import NavLogo from './NavLogo';
 import NavContent from './NavContent';
 import { gerarMenu, gerarMenurevenda } from '../../../utils/databit/menu';
+import { DATABIT } from '../../../config/constant';
+import PainelFinanceiro from '../../../views/databit/carousel/financeiro';
 
 const Navigation = () => {
   const configContext = useContext(ConfigContext);
@@ -15,13 +17,14 @@ const Navigation = () => {
   const windowSize = useWindowSize();
 
   useEffect(() => {
+    console.log(DATABIT.islogged);
     const handleCarregarMenu = async () => {
       const menufim = await gerarMenu();
       setMenu(menufim);
       const menurevfim = await gerarMenurevenda();
+      console.log(menurevfim);
       setMenurevenda(menurevfim);
     };
-
     handleCarregarMenu();
   }, []);
 
@@ -109,7 +112,12 @@ const Navigation = () => {
           marginRight: 'auto'
         }}
       >
-        <NavContent navigation={menu.items || []} navigationright={menurevenda.items || []} />
+        {!DATABIT.islogged ? (
+          <NavContent navigation={menu.items || []} navigationright={menurevenda.items || []} />
+        ) : (
+          <NavContent navigation={menu.items || []} navigationright={[]} />
+        )}
+        {DATABIT.islogged && <PainelFinanceiro></PainelFinanceiro>}
       </div>
     </div>
   );

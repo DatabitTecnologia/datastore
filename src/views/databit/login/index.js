@@ -6,6 +6,8 @@ import { useNavigate } from 'react-router-dom';
 import lock from '../../../assets/images/user/lock.png';
 import { apiFind } from 'datareact/src/api/crudapi';
 import { LoadingOverlay } from '../../../utils/databit/screenprocess';
+import { Encode64 } from 'datareact/src/utils/crypto';
+import { DATABIT } from '../../../config/constant';
 
 const Login = () => {
   const navigate = useNavigate();
@@ -13,6 +15,7 @@ const Login = () => {
   const [password, setPassword] = useState();
   const { addToast } = useToasts();
   const [loading, setLoading] = React.useState(false);
+  const [salvarCredenciais, setSalvarCredenciais] = useState(false);
 
   const onLogin = async () => {
     if (!email) {
@@ -50,9 +53,46 @@ const Login = () => {
       });
       return;
     } else {
-      setLoading(false);
+      const codcli = user.codcli;
+      const responsecli = await apiFind(
+        'Cliente',
+        'TB01008_NOME,TB01008_CONCEITO,TB01008_CONDPAG,TB01008_TIPDESC,TB01008_INSCEST,TB01008_NAOCONTRIBUINTE,TB01008_VENDEDOR',
+        '',
+        "TB01008_CODIGO = '" + codcli + "' "
+      );
+      const cliente = responsecli.data;
+      const naocontribuinte =
+        cliente.inscest === null || cliente.inscest === '' || cliente.inscest === 'ISENTO' || cliente.naocontribuinte === 'S';
+      sessionStorage.setItem('client', Encode64(codcli));
+      sessionStorage.setItem('nameclient', Encode64(cliente.nome));
+      if (cliente.condpag) {
+        sessionStorage.setItem('payment', Encode64(cliente.condpag));
+      }
+      if (cliente.tipdesc) {
+        sessionStorage.setItem('operation', Encode64(cliente.tipdesc));
+      }
+      if (naocontribuinte) {
+        sessionStorage.setItem('consumption', Encode64('S'));
+      } else {
+        sessionStorage.setItem('consumption', Encode64('N'));
+      }
+      if (cliente.conceito) {
+        sessionStorage.setItem('tableprice', Encode64(cliente.conceito));
+      }
+      if (cliente.vendedor) {
+        sessionStorage.setItem('seller', Encode64(cliente.vendedor));
+      }
+      if (salvarCredenciais) {
+        localStorage.setItem('client', Encode64(codcli));
+      }
+      DATABIT.islogged = true;
       navigate('/index');
+      setLoading(false);
     }
+  };
+
+  const handleCheckboxChange = (e) => {
+    setSalvarCredenciais(e.target.checked);
   };
 
   return (
@@ -86,7 +126,7 @@ const Login = () => {
                       </div>
                       <div className="form-group text-start pb-3" style={{ textAlign: 'center' }}>
                         <label className="checkbox-modern" style={{ marginBottom: '10px', display: 'block' }}>
-                          <input type="checkbox" />
+                          <input type="checkbox" checked={salvarCredenciais} onChange={handleCheckboxChange} />
                           <span className="checkmark"></span>
                           Salvar credenciais
                         </label>

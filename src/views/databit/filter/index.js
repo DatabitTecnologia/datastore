@@ -11,6 +11,7 @@ import Dropdown from '../../../components/Dropdown';
 import { LoadingOverlay } from '../../../utils/databit/screenprocess';
 import { Decode64 } from 'datareact/src/utils/crypto';
 import { StarRatingView } from '../../../components/StarRatingView';
+import { DATABIT } from '../../../config/constant';
 
 const FilterProd = (props) => {
   const navigate = useNavigate();
@@ -251,7 +252,7 @@ const FilterProd = (props) => {
     const payment = Decode64(sessionStorage.getItem('payment'));
     const client = Decode64(sessionStorage.getItem('client'));
     const consumption = Decode64(sessionStorage.getItem('consumption'));
-    const tablePrice = Decode64(sessionStorage.getItem('tablePrice'));
+    const tableprice = Decode64(sessionStorage.getItem('tableprice'));
 
     const response = await apiGetPicturelist(
       "FT02021('" +
@@ -265,7 +266,7 @@ const FilterProd = (props) => {
         "','" +
         consumption +
         "','" +
-        tablePrice +
+        tableprice +
         "','N',null,'S')",
       'codigo',
       'foto',
@@ -286,8 +287,8 @@ const FilterProd = (props) => {
     }
   };
 
-  const typeObs = (item) => {
-    switch (parseInt(Decode64(sessionStorage.getItem('typeObs')))) {
+  const typeobs = (item) => {
+    switch (parseInt(Decode64(sessionStorage.getItem('typeobs')))) {
       case 1: {
         return item.obs;
       }
@@ -386,12 +387,12 @@ const FilterProd = (props) => {
       <div id="frmfilter" name="frmfilter">
         <Row>
           <Col lg={10}>
-            <p className="label-result" style={{ textAlign: 'left', marginBottom: '10px' }}>
+            <p className="label-destaque-16" style={{ textAlign: 'left', marginBottom: '10px' }}>
               Resultados para : {namefilter}
             </p>
           </Col>
           <Col lg={2}>
-            <p className="label-result" style={{ textAlign: 'right', marginBottom: '10px' }}>
+            <p className="label-destaque-16" style={{ textAlign: 'right', marginBottom: '10px' }}>
               Total de Produtos: {rows.length ?? 0}
             </p>
           </Col>
@@ -577,13 +578,15 @@ const FilterProd = (props) => {
                             >
                               <img src={`data:image/jpeg;base64,${item.picture}`} alt={item.codigo} width="50%" height="50%" />
                               <span className="label-destaque-14">{capitalizeText(item.nome.substring(0, 50))}</span>
-                              <span className="color-price" style={{ textAlign: 'right', fontSize: '20px', marginRight: '100px' }}>
-                                R${' '}
-                                {item.venda.toLocaleString('pt-BR', {
-                                  minimumFractionDigits: 2,
-                                  maximumFractionDigits: 2
-                                })}
-                              </span>
+                              {DATABIT.islogged && (
+                                <span className="color-price" style={{ textAlign: 'right', fontSize: '20px', marginRight: '100px' }}>
+                                  R${' '}
+                                  {item.venda.toLocaleString('pt-BR', {
+                                    minimumFractionDigits: 2,
+                                    maximumFractionDigits: 2
+                                  })}
+                                </span>
+                              )}
                               <StarRatingView rating={item.avaliacao ?? 0} size={15} />
                             </Row>
                           </div>
@@ -618,24 +621,26 @@ const FilterProd = (props) => {
                                 <span className="label-destaque-16">{capitalizeText(item.nome.substring(0, 50))}</span>
                                 <StarRatingView rating={item.avaliacao ?? 0} size={20} showrating={true} />
                                 <PerfectScrollbar style={{ width: '100%', height: '100px', marginTop: '2px' }}>
-                                  <p style={{ fontSize: '13px', marginLeft: '2px', marginRight: '2px' }}>{typeObs(item)}</p>
+                                  <p style={{ fontSize: '13px', marginLeft: '2px', marginRight: '2px' }}>{typeobs(item)}</p>
                                 </PerfectScrollbar>
                               </Row>
                             </Col>
                             <Col lg={typefilter === -1 ? 3 : 3} style={{ textAlign: 'right', marginTop: '130px' }}>
-                              <span
-                                style={{
-                                  fontSize: '2rem',
-                                  color: sessionStorage.getItem('colorPrice'),
-                                  fontWeight: '700'
-                                }}
-                              >
-                                R${' '}
-                                {item.venda.toLocaleString('pt-BR', {
-                                  minimumFractionDigits: 2,
-                                  maximumFractionDigits: 2
-                                })}
-                              </span>
+                              {DATABIT.islogged && (
+                                <span
+                                  style={{
+                                    fontSize: '2rem',
+                                    color: sessionStorage.getItem('colorPrice'),
+                                    fontWeight: '700'
+                                  }}
+                                >
+                                  R${' '}
+                                  {item.venda.toLocaleString('pt-BR', {
+                                    minimumFractionDigits: 2,
+                                    maximumFractionDigits: 2
+                                  })}
+                                </span>
+                              )}
                             </Col>
                           </Row>
                         </div>
