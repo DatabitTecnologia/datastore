@@ -1,5 +1,6 @@
 import { apiList } from 'datareact/src/api/crudapi';
 import { capitalizeText } from 'datareact/src/utils/capitalize';
+import { Decode64 } from 'datareact/src/utils/crypto';
 
 export const gerarMenu = async () => {
   const menuHome = {
@@ -219,7 +220,7 @@ export const gerarMenurevenda = async () => {
     children: [
       {
         id: 'filtro',
-        title: 'Nossas Revendas',
+        title: Decode64(sessionStorage.getItem('titlerev')),
         type: 'item',
         icon: 'feather icon-map',
         classes: 'nav-item',

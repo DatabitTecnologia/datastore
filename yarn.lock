@@ -4620,6 +4620,11 @@ ag-charts-types@11.3.2:
   resolved "https://registry.npmjs.org/ag-charts-types/-/ag-charts-types-11.3.2.tgz#b1b4e2d273911cdd6d78ce7b4a6c561fa22796bf"
   integrity sha512-trPGqgGYiTeLgtf9nLuztDYOPOFOLbqHn1g2D99phf7QowcwdX0TPx0wfWG8Hm90LjB8IH+G2s3AZe2vrdAtMQ==
 
+ag-charts-types@12.0.2:
+  version "12.0.2"
+  resolved "https://registry.npmjs.org/ag-charts-types/-/ag-charts-types-12.0.2.tgz#7796ac5d717f073145710e7318d22f7fafe6687a"
+  integrity sha512-AWM1Y+XW+9VMmV3AbzdVEnreh/I2C9Pmqpc2iLmtId3Xbvmv7O56DqnuDb9EXjK5uPxmyUerTP+utL13UGcztw==
+
 ag-grid-community@33.3.2, ag-grid-community@^33.2.4:
   version "33.3.2"
   resolved "https://registry.npmjs.org/ag-grid-community/-/ag-grid-community-33.3.2.tgz#bd3e41170958cb81da71a74a3021af66fc6ebdc1"
@@ -4627,12 +4632,27 @@ ag-grid-community@33.3.2, ag-grid-community@^33.2.4:
   dependencies:
     ag-charts-types "11.3.2"
 
+ag-grid-community@34.0.2, ag-grid-community@^34.0.2:
+  version "34.0.2"
+  resolved "https://registry.npmjs.org/ag-grid-community/-/ag-grid-community-34.0.2.tgz#7b1239cfda1bca2555611873eb845e0ba2c4ab3f"
+  integrity sha512-hVJp5vrmwHRB10YjfSOVni5YJkO/v+asLjT72S4YnIFSx8lAgyPmByNJgtojk1aJ5h6Up93jTEmGDJeuKiWWLA==
+  dependencies:
+    ag-charts-types "12.0.2"
+
 ag-grid-react@^33.2.4:
   version "33.3.2"
   resolved "https://registry.npmjs.org/ag-grid-react/-/ag-grid-react-33.3.2.tgz#c9c5f53f4712929b5b526bba7329ad7496583c32"
   integrity sha512-5bv4JIJvGov23sduIUIyQTqpa/qhoQrRkQm5pFOQb7RMwusfx6xBPrkLwIIlCJiQ8g0OOinxWzZ2kQ2Zml6tLw==
   dependencies:
     ag-grid-community "33.3.2"
+    prop-types "^15.8.1"
+
+ag-grid-react@^34.0.2:
+  version "34.0.2"
+  resolved "https://registry.npmjs.org/ag-grid-react/-/ag-grid-react-34.0.2.tgz#ae6f4da8175df50a0eeb4ef0aa82f5c77b089a41"
+  integrity sha512-1KBXkTvwtZiYVlSuDzBkiqfHjZgsATOmpLZdAtdmsCSOOOEWai0F9zHHgBuHfyciAE4nrbQWfojkx8IdnwsKFw==
+  dependencies:
+    ag-grid-community "34.0.2"
     prop-types "^15.8.1"
 
 agent-base@6:
@@ -13091,7 +13111,7 @@ rc@^1.2.7:
     minimist "^1.2.0"
     strip-json-comments "~2.0.1"
 
-react-apexcharts@^1.4.1:
+react-apexcharts@^1.4.1, react-apexcharts@^1.7.0:
   version "1.7.0"
   resolved "https://registry.npmjs.org/react-apexcharts/-/react-apexcharts-1.7.0.tgz#bbd08425674224adb27c9f2c62477d43bd5de539"
   integrity sha512-03oScKJyNLRf0Oe+ihJxFZliBQM9vW3UWwomVn4YVRTN1jsIR58dLWt0v1sb8RwJVHDMbeHiKQueM0KGpn7nOA==

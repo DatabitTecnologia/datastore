@@ -1,22 +1,47 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Carousel from 'react-multi-carousel';
 import 'react-multi-carousel/lib/styles.css';
 import { DollarSign, CheckCircle, XCircle, Calendar, Gift, ShoppingCart } from 'react-feather';
+import { apiExec } from 'datareact/src/api/crudapi';
+import { LoadingOverlay } from '../../../../utils/databit/screenprocess';
+import { Decode64 } from 'datareact/src/utils/crypto';
 
-const PainelFinanceiro = ({
-  beneficios = 150,
-  limiteCredito = 450,
-  creditoDisponivel = 250,
-  totalCompras = 12250.77,
-  mediaCompras = 1180,
-  comprasMes = 400,
-  valorPago = 400,
-  valorVencido = 400,
-  valorAVencer = 400,
-  docsPagosEmDia = 12,
-  docsAtrasados = 2,
-  maxDiasAtraso = 37
-}) => {
+const PainelFinanceiro = (props) => {
+  const { codcli } = props;
+  const [beneficios, setBeneficios] = React.useState(0);
+  const [limitecredito, setLimitecredito] = React.useState(0);
+  const [creditodisponivel, setCreditodisponival] = React.useState(0);
+  const [totalcompras, setTotalcompras] = React.useState(0);
+  const [mediacompras, setMediacompras] = React.useState(0);
+  const [comprasmes, setComprasmes] = React.useState(0);
+  const [valorpago, setValorpago] = React.useState(0);
+  const [valorvencido, setValorvencido] = React.useState(0);
+  const [valorvencer, setValorvencer] = React.useState(0);
+  const [pagosdia, setPagosdia] = React.useState(0);
+  const [pagosatraso, setPagosatraso] = React.useState(0);
+  const [diasatraso, setDiasatraso] = React.useState(0);
+  const [loading, setLoading] = React.useState(true);
+
+  useEffect(() => {
+    if (loading) {
+      apiExec("select * from ft02025('" + codcli + "'," + Decode64(sessionStorage.getItem('monthstore')) + ')', 'S').then((response) => {
+        setBeneficios(response.data[0].beneficios);
+        setLimitecredito(response.data[0].limitecredito);
+        setCreditodisponival(response.data[0].creditodisponivel);
+        setTotalcompras(response.data[0].totalcompras);
+        setMediacompras(response.data[0].mediacompras);
+        setComprasmes(response.data[0].comprasmes);
+        setValorpago(response.data[0].valorpago);
+        setValorvencido(response.data[0].valorvencido);
+        setValorvencer(response.data[0].valorvencer);
+        setPagosdia(response.data[0].pagosdia);
+        setPagosatraso(response.data[0].pagosatraso);
+        setDiasatraso(response.data[0].diasatraso);
+        setLoading(false);
+      });
+    }
+  });
+
   const moeda = (v) =>
     new Intl.NumberFormat('pt-BR', {
       style: 'currency',
@@ -32,17 +57,17 @@ const PainelFinanceiro = ({
 
   const itens = [
     { title: 'Benefícios Disponíveis', icon: <Gift />, value: moeda(beneficios), color: '#0099ff' },
-    { title: 'Limite de Crédito', icon: <Gift />, value: moeda(limiteCredito), color: '#cccc00' },
-    { title: 'Crédito Disponível', icon: <Gift />, value: moeda(creditoDisponivel), color: '#00cc00' },
-    { title: 'Total de Compras', icon: <ShoppingCart />, value: moeda(totalCompras), color: '#0099ff' },
-    { title: 'Média de Compras', icon: <ShoppingCart />, value: moeda(mediaCompras), color: '#cccc00' },
-    { title: 'Compras no Mês', icon: <ShoppingCart />, value: moeda(comprasMes), color: '#00cc00' },
-    { title: 'Valor Pago', icon: <DollarSign />, value: moeda(valorPago), color: '#0099ff' },
-    { title: 'Valor Vencido', icon: <DollarSign />, value: moeda(valorVencido), color: '#ff3300' },
-    { title: 'Valor à Vencer', icon: <DollarSign />, value: moeda(valorAVencer), color: '#00cc00' },
-    { title: 'Docs. pagos em dia', icon: <CheckCircle />, value: docsPagosEmDia, color: '#0099ff' },
-    { title: 'Docs. pagos em atraso', icon: <XCircle />, value: docsAtrasados, color: '#ff3300' },
-    { title: 'Máx. dias em atraso', icon: <Calendar />, value: `${maxDiasAtraso} dias`, color: '#ff3300' }
+    { title: 'Limite de Crédito', icon: <Gift />, value: moeda(limitecredito), color: '#cccc00' },
+    { title: 'Crédito Disponível', icon: <Gift />, value: moeda(creditodisponivel), color: '#00cc00' },
+    { title: 'Total de Compras', icon: <ShoppingCart />, value: moeda(totalcompras), color: '#0099ff' },
+    { title: 'Média de Compras', icon: <ShoppingCart />, value: moeda(mediacompras), color: '#cccc00' },
+    { title: 'Compras no Mês', icon: <ShoppingCart />, value: moeda(comprasmes), color: '#00cc00' },
+    { title: 'Valor Pago', icon: <DollarSign />, value: moeda(valorpago), color: '#0099ff' },
+    { title: 'Valor Vencido', icon: <DollarSign />, value: moeda(valorvencido), color: '#ff3300' },
+    { title: 'Valor à Vencer', icon: <DollarSign />, value: moeda(valorvencer), color: '#00cc00' },
+    { title: 'Docs. pagos em dia', icon: <CheckCircle />, value: pagosdia, color: '#0099ff' },
+    { title: 'Docs. pagos em atraso', icon: <XCircle />, value: pagosatraso, color: '#ff3300' },
+    { title: 'Máx. dias em atraso', icon: <Calendar />, value: `${diasatraso} dias`, color: '#ff3300' }
   ];
 
   return (
@@ -59,6 +84,7 @@ const PainelFinanceiro = ({
           <Item key={index} {...item} />
         ))}
       </Carousel>
+      {loading && <LoadingOverlay />}
     </div>
   );
 };

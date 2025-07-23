@@ -52,6 +52,7 @@ const configUrl = `${process.env.PUBLIC_URL}/config.json`;
     sessionStorage.setItem('colorSection', data.colorSection);
     sessionStorage.setItem('colorSocial', data.colorSocial);
     sessionStorage.setItem('colorButtonfooter', data.colorButtonfooter);
+    sessionStorage.setItem('colorGrid', data.colorGrid);
     sessionStorage.setItem('token', data.token);
     sessionStorage.setItem('enterprise', Encode64(data.enterprise));
     sessionStorage.setItem('nameenterprise', Encode64(data.nameenterprise));
@@ -77,6 +78,8 @@ const configUrl = `${process.env.PUBLIC_URL}/config.json`;
     sessionStorage.setItem('fromseller', Encode64(data.emailRevenda));
     sessionStorage.setItem('signature', data.emailSignature);
     sessionStorage.setItem('seller', Encode64(data.seller));
+    sessionStorage.setItem('monthstore', Encode64(data.monthStore.toString()));
+    sessionStorage.setItem('titlerev', Encode64(data.titleRev));
 
     document.title = data.title;
     DATABIT.islogged = false;

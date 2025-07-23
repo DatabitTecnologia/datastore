@@ -77,6 +77,36 @@ const routes = [
     element: lazy(() => import('./views/databit/login/newpass'))
   },
   {
+    layout: AdminLayout,
+    exact: 'true',
+    path: '/logincadastro',
+    element: lazy(() => import('./views/databit/login/cadastro'))
+  },
+  {
+    layout: AdminLayout,
+    exact: 'true',
+    path: '/logincompra',
+    element: lazy(() => import('./views/databit/login/compra'))
+  },
+  {
+    layout: AdminLayout,
+    exact: 'true',
+    path: '/loginproduto',
+    element: lazy(() => import('./views/databit/login/produto'))
+  },
+  {
+    layout: AdminLayout,
+    exact: 'true',
+    path: '/loginbeneficio',
+    element: lazy(() => import('./views/databit/login/beneficio'))
+  },
+  {
+    layout: AdminLayout,
+    exact: 'true',
+    path: '/loginfinanceiro',
+    element: lazy(() => import('./views/databit/login/financeiro'))
+  },
+  {
     exact: 'true',
     path: '/404',
     element: lazy(() => import('./views/errors/NotFound404'))

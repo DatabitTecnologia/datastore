@@ -7,6 +7,7 @@ import NavLogo from './NavLogo';
 import NavContent from './NavContent';
 import { gerarMenu, gerarMenurevenda } from '../../../utils/databit/menu';
 import { DATABIT } from '../../../config/constant';
+import { Decode64 } from 'datareact/src/utils/crypto';
 import PainelFinanceiro from '../../../views/databit/carousel/financeiro';
 
 const Navigation = () => {
@@ -117,7 +118,7 @@ const Navigation = () => {
         ) : (
           <NavContent navigation={menu.items || []} navigationright={[]} />
         )}
-        {DATABIT.islogged && <PainelFinanceiro></PainelFinanceiro>}
+        {DATABIT.islogged && <PainelFinanceiro codcli={Decode64(sessionStorage.getItem('client'))}></PainelFinanceiro>}
       </div>
     </div>
   );

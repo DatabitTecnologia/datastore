@@ -46,11 +46,11 @@ const LoginOptions = ({ openDropdownFn, closeDropdown }) => {
     });
 
   const options = [
-    { icon: <User size={18} />, label: 'Dados Cadastrais', link: '/compras' },
-    { icon: <ShoppingCart size={18} />, label: 'Minhas Últimas Compras', link: '/compras' },
-    { icon: <Package size={18} />, label: 'Meus Produtos Comprados', link: '/produtos' },
-    { icon: <Gift size={18} />, label: 'Meus Benefícios', link: '/beneficios' },
-    { icon: <BarChart2 size={18} />, label: 'Minha Posição Financeira', link: '/financeiro' },
+    { icon: <User size={18} />, label: 'Dados Cadastrais', link: '/logincadastro' },
+    { icon: <ShoppingCart size={18} />, label: 'Minhas Últimas Compras', link: '/logincompra' },
+    { icon: <Package size={18} />, label: 'Meus Produtos Comprados', link: '/loginproduto' },
+    { icon: <Gift size={18} />, label: 'Meus Benefícios', link: '/loginbeneficio' },
+    { icon: <BarChart2 size={18} />, label: 'Minha Posição Financeira', link: '/loginfinanceiro' },
     logoffOption(navigate)
   ];
 
@@ -107,9 +107,8 @@ const LoginOptions = ({ openDropdownFn, closeDropdown }) => {
             <span className="label-destaque-16">{nameClient}</span>
           </div>
 
+          {/* Informações financeiras 
           <hr />
-
-          {/* Informações financeiras */}
           {infoLines.map((item, idx) => (
             <div key={idx} style={{ display: 'flex', justifyContent: 'space-between' }}>
               <span className="label-destaque-16">{item.label}</span>
@@ -118,8 +117,8 @@ const LoginOptions = ({ openDropdownFn, closeDropdown }) => {
               </span>
             </div>
           ))}
-
-          <hr />
+             <hr />
+            */}
 
           {/* Opções */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '10px' }}>

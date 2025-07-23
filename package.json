@@ -1,5 +1,5 @@
 {
-  "name": "newshop",
+  "name": "DataStore",
   "version": "18.0.0",
   "private": true,
   "dependencies": {
@@ -9,6 +9,8 @@
     "@react-google-maps/api": "^2.20.7",
     "@reduxjs/toolkit": "^1.9.5",
     "@tanem/react-nprogress": "^5.0.42",
+    "ag-grid-community": "^34.0.2",
+    "ag-grid-react": "^34.0.2",
     "axios": "^1.4.0",
     "axios-mock-adapter": "^1.21.4",
     "bootstrap": "^5.3.6",
@@ -23,6 +25,7 @@
     "lucide-react": "^0.517.0",
     "nib-core": "^2.5.7",
     "react": "^18.2.0",
+    "react-apexcharts": "^1.7.0",
     "react-app-polyfill": "^3.0.0",
     "react-bootstrap": "^2.10.10",
     "react-copy-to-clipboard": "^5.1.0",
