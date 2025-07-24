@@ -17,6 +17,7 @@ import { CompartilharProduto } from './compartilhar';
 import ProdutoAvaliacao from './avaliacao';
 import { DATABIT } from '../../../config/constant';
 import { adicionarCarrinho } from '../../../utils/databit/carrinho';
+import semfoto from '../../../assets/images/databit/semfoto.png';
 
 const Produto = (props) => {
   const location = useLocation();
@@ -111,7 +112,7 @@ const Produto = (props) => {
         tableprice +
         "','N', '" +
         produto +
-        "','S')",
+        "',null,0,'S')",
       'codigo',
       'foto',
       "codigo = '" + produto + "' ",
@@ -121,6 +122,7 @@ const Produto = (props) => {
     );
     if (response.status === 200) {
       setItemselec(response.data[0]);
+      console.log(response.data[0]);
     }
     setLoading(false);
   };
@@ -129,26 +131,25 @@ const Produto = (props) => {
     setLoading(true);
     const response = await apiGetPicturelist("FT02022('" + produto + "')", 'codigo', 'foto', ' 0 = 0 ', 'codigo,nome', '', 'S');
     if (response.status === 200) {
-      console.log(response.data);
       setListafotos(response.data);
     }
     setLoading(false);
   };
 
   const typeobs = (item) => {
-    switch (parseInt(Decode64(sessionStorage.getItem('typeobs')))) {
-      case 1: {
+    const tipo = parseInt(Decode64(sessionStorage.getItem('typeobs')));
+
+    switch (tipo) {
+      case 1:
         return item.obs;
-      }
-      case 2: {
+      case 2:
         return item.obsint;
-      }
-      case 3: {
-        return item.obsfull;
-      }
+      case 3:
+        return `${item.obsint || ''}\n${item.obs || ''}`; // quebra de linha entre os dois
+      default:
+        return '';
     }
   };
-
   const fotoProduto = (
     <Col lg={4}>
       <div
@@ -160,7 +161,7 @@ const Produto = (props) => {
           borderRadius: '8px'
         }}
       >
-        {itemselec.picture && (
+        {itemselec.picture !== 'MHg=' ? (
           <ReactImageMagnify
             {...{
               smallImage: {
@@ -172,6 +173,29 @@ const Produto = (props) => {
               },
               largeImage: {
                 src: `data:image/jpeg;base64,${foto}`,
+                width: 1200,
+                height: 1200
+              },
+              enlargedImageContainerStyle: {
+                zIndex: 999,
+                background: '#fff',
+                border: '1px solid #ccc'
+              },
+              enlargedImagePosition: 'over'
+            }}
+          />
+        ) : (
+          <ReactImageMagnify
+            {...{
+              smallImage: {
+                alt: itemselec.codigo,
+                isFluidWidth: false,
+                width: 350,
+                height: 350,
+                src: semfoto
+              },
+              largeImage: {
+                src: semfoto,
                 width: 1200,
                 height: 1200
               },
@@ -196,7 +220,7 @@ const Produto = (props) => {
         options={{ suppressScrollX: true, suppressScrollY: false }}
         style={{ width: '100%', height: '340px', marginTop: '10px' }}
       >
-        <p style={{ fontSize: '0.9rem', marginLeft: '2px', marginRight: '2px' }}>{typeobs(itemselec)}</p>
+        <p style={{ fontSize: '0.9rem', marginLeft: '2px', marginRight: '2px', whiteSpace: 'pre-wrap' }}>{typeobs(itemselec)}</p>
       </PerfectScrollbar>
     </Col>
   );
@@ -265,15 +289,27 @@ const Produto = (props) => {
                 cursor: 'pointer'
               }}
             >
-              <img
-                src={`data:image/jpeg;base64,${item.picture}`}
-                alt={index}
-                style={{
-                  width: '100%',
-                  height: '100%',
-                  objectFit: 'contain'
-                }}
-              />
+              {item.picture !== 'MHg=' ? (
+                <img
+                  src={`data:image/jpeg;base64,${item.picture}`}
+                  alt={index}
+                  style={{
+                    width: '100%',
+                    height: '100%',
+                    objectFit: 'contain'
+                  }}
+                />
+              ) : (
+                <img
+                  src={semfoto}
+                  alt={index}
+                  style={{
+                    width: '100%',
+                    height: '100%',
+                    objectFit: 'contain'
+                  }}
+                />
+              )}
             </Row>
           ))}
         </Carousel>

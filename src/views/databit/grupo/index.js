@@ -3,6 +3,7 @@ import { Card, ListGroup, Row } from 'react-bootstrap';
 import { apiList, apiGetPicturelist } from 'datareact/src/api/crudapi';
 import { capitalizeText } from 'datareact/src/utils/capitalize';
 import { useNavigate } from 'react-router-dom';
+import semfoto from '../../../assets/images/databit/semfoto.png';
 
 const ViewGrupo = () => {
   const [rows, setRows] = useState([]);
@@ -55,7 +56,19 @@ const ViewGrupo = () => {
                   onClick={() => navigate('/filter/?type=2&term=' + grupo.codigo + '&name=' + capitalizeText(grupo.nome))}
                   style={{ textAlign: 'center' }}
                 >
-                  <img src={`data:image/jpeg;base64,${grupo.picture}`} alt={grupo.codigo} width="250px" height="250px" />
+                  {grupo.picture !== 'MHg=' ? (
+                    <img
+                      src={`data:image/jpeg;base64,${grupo.picture}`}
+                      alt={grupo.codigo}
+                      style={{ width: '250px', height: '250px', objectFit: 'contain', display: 'block', margin: '0 auto' }}
+                    />
+                  ) : (
+                    <img
+                      src={semfoto}
+                      alt={grupo.codigo}
+                      style={{ width: '250px', height: '250px', objectFit: 'contain', display: 'block', margin: '0 auto' }}
+                    />
+                  )}
                 </Row>
                 {subgruposDoGrupo.length > 0 ? (
                   <ListGroup

@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import useWindowSize from '../../../../hooks/useWindowSize';
 import { ConfigContext } from '../../../../contexts/ConfigContext';
+import { DATABIT } from '../../../../config/constant';
 
 const NavLeft = () => {
   const windowSize = useWindowSize();
@@ -137,7 +138,7 @@ const NavLeft = () => {
         <ListGroup.Item as="li" bsPrefix=" ">
           <input
             id="edtprocurar"
-            style={{ width: '610px' }}
+            style={{ width: DATABIT.islogged ? '680px' : '700px' }}
             onChange={(e) => handleChangefilter(e)}
             className="form-control"
             placeholder="Opção à procurar"

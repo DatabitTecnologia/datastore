@@ -7,6 +7,7 @@ import { Decode64 } from 'datareact/src/utils/crypto';
 import { StarRatingView } from '../../../../components/StarRatingView';
 import { LoadingOverlay } from '../../../../utils/databit/screenprocess';
 import { DATABIT } from '../../../../config/constant';
+import semfoto from '../../../../assets/images/databit/semfoto.png';
 
 const ProdutoSuprimento = (props) => {
   const navigate = useNavigate();
@@ -15,7 +16,9 @@ const ProdutoSuprimento = (props) => {
   const [loading, setLoading] = React.useState(false);
 
   useEffect(() => {
-    Filtrar();
+    if (produto) {
+      Filtrar();
+    }
   }, [produto]);
 
   const Filtrar = async () => {
@@ -26,8 +29,8 @@ const ProdutoSuprimento = (props) => {
     const client = Decode64(sessionStorage.getItem('client'));
     const consumption = Decode64(sessionStorage.getItem('consumption'));
     const tableprice = Decode64(sessionStorage.getItem('tableprice'));
-    let filter = '';
-    if (tiposup === 9 || tiposup === 11) {
+    const filter = ' 0 = 0 order by nome ';
+    /*if (tiposup === 9 || tiposup === 11) {
       filter =
         "  exists (select tb01031_codigoproduto from tb01031 where codigo = tb01031_codigo and tb01031_codigoproduto = '" +
         produto +
@@ -37,6 +40,11 @@ const ProdutoSuprimento = (props) => {
         "  exists (select tb01031_codigo from tb01031 where codigo = tb01031_codigoproduto and tb01031_codigo = '" +
         produto +
         "') order by nome";
+    }*/
+
+    let web = 'S';
+    if (tiposup !== 9 && tiposup !== 11) {
+      web = 'N';
     }
 
     const response = await apiGetPicturelist(
@@ -52,11 +60,17 @@ const ProdutoSuprimento = (props) => {
         consumption +
         "','" +
         tableprice +
-        "','N',null,'S')",
+        "','N',null,'" +
+        produto +
+        "'," +
+        tiposup +
+        ",'" +
+        web +
+        "')",
       'codigo',
       'foto',
       filter,
-      'codigo,referencia,codbarras,codauxiliar,nome,venda,grupo,subgrupo,marca,nomegrupo,nomesubgrupo,nomemarca,obs,obsint,obsfull,avaliacao',
+      'codigo,referencia,codbarras,codauxiliar,nome,venda,grupo,subgrupo,marca,nomegrupo,nomesubgrupo,nomemarca,obs,obsint,obsfull,avaliacao,web',
       '',
       'S'
     );
@@ -96,13 +110,21 @@ const ProdutoSuprimento = (props) => {
                   color: '#000',
                   cursor: 'pointer'
                 }}
-                onClick={() => navigate('/produto/?produto=' + item.codigo)}
+                onClick={() => item.web === 'S' && navigate('/produto/?produto=' + item.codigo)}
               >
-                <img
-                  src={`data:image/jpeg;base64,${item.picture}`}
-                  alt={item.codigo}
-                  style={{ width: '130px', height: '130px', marginBottom: '10px' }}
-                />
+                {item.picture !== 'MHg=' ? (
+                  <img
+                    src={`data:image/jpeg;base64,${item.picture}`}
+                    alt={item.codigo}
+                    style={{ width: '130px', height: '130px', marginBottom: '10px', objectFit: 'contain' }}
+                  />
+                ) : (
+                  <img
+                    src={semfoto}
+                    alt={item.codigo}
+                    style={{ width: '130px', height: '130px', marginBottom: '10px', objectFit: 'contain' }}
+                  />
+                )}
                 <span style={{ fontSize: '0.9rem', fontWeight: '500' }}>{capitalizeText(item.nome.substring(0, 50))}</span>
                 {DATABIT.islogged ||
                   (parseInt(Decode64(sessionStorage.getItem('pricelogin'))) === 1 && (

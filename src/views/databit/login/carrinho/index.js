@@ -9,6 +9,7 @@ import { Check, Trash2, MinusCircle } from 'react-feather';
 import { apiExec } from 'datareact/src/api/crudapi';
 import { LoadingOverlay } from '../../../../utils/databit/screenprocess';
 import { Decode64 } from 'datareact/src/utils/crypto';
+import semfoto from '../../../../assets/images/databit/semfoto.png';
 
 const LoginCarrinho = ({ openDropdownFn, closeDropdown, listCarrinho }) => {
   const navigate = useNavigate();
@@ -90,7 +91,7 @@ const LoginCarrinho = ({ openDropdownFn, closeDropdown, listCarrinho }) => {
             zIndex: 999,
             backgroundColor: '#fff',
             color: '#000',
-            marginRight: '10px',
+            marginRight: '5px',
             boxShadow: '0 4px 16px rgba(0, 0, 0, 0.15)',
             flexDirection: 'column'
           }}
@@ -156,7 +157,15 @@ const LoginCarrinho = ({ openDropdownFn, closeDropdown, listCarrinho }) => {
                     >
                       <Row style={{ cursor: 'pointer' }} onClick={() => navigate(`/produto/?produto=${item.codigo}`)}>
                         <Col lg={3} style={{ textAlign: 'left' }}>
-                          <img src={`data:image/jpeg;base64,${item.picture}`} alt={item.codigo} width="130px" height="130px" />
+                          {item.picture !== 'MHg=' ? (
+                            <img
+                              src={`data:image/jpeg;base64,${item.picture}`}
+                              alt={item.codigo}
+                              style={{ width: '130px', height: '130px', objectFit: 'contain' }}
+                            />
+                          ) : (
+                            <img src={semfoto} alt={item.codigo} style={{ width: '130px', height: '130px', objectFit: 'contain' }} />
+                          )}
                         </Col>
 
                         <Col lg={7}>

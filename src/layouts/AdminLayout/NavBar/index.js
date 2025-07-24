@@ -9,6 +9,7 @@ import { ConfigContext } from '../../../contexts/ConfigContext';
 import * as actionType from '../../../store/actions';
 import { Decode64 } from 'datareact/src/utils/crypto';
 import PainelFinanceiro from '../../../views/databit/carousel/financeiro';
+import { DATABIT } from '../../../config/constant';
 
 const NavBar = () => {
   const [moreToggle, setMoreToggle] = useState(false);
@@ -50,7 +51,11 @@ const NavBar = () => {
         className={collapseClass.join(' ')}
       >
         <div className="max-w-[1280px] mx-auto px-5" style={{ justifyContent: 'space-between', padding: '2px' }}>
-          <img style={{ marginTop: '-20px' }} src={`data:image/png;base64,${sessionStorage.getItem('logo')}`} alt="Imagem" />
+          <img
+            style={{ marginTop: '-20px', marginLeft: DATABIT.islogged ? '15px' : '-20px' }}
+            src={`data:image/png;base64,${sessionStorage.getItem('logo')}`}
+            alt="Imagem"
+          />
           <Link to="#" className={moreClass.join(' ')} onClick={() => setMoreToggle(!moreToggle)}>
             <i className="feather icon-more-vertical" />
           </Link>

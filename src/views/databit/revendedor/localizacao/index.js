@@ -119,7 +119,7 @@ const RevendedorLocalizacao = () => {
   const [userLocation, setUserLocation] = useState(null);
   const [userLocationfixed, setUserLocationfixed] = useState(null);
   const [radius, setRadius] = useState(50); // km
-  const [filteredDealers, setFilteredDealers] = useState(mockRepresentantes);
+  const [filteredDealers, setFilteredDealers] = useState([]);
   const [input, setInput] = useState('');
   const [showAll, setShowAll] = useState(false);
   const maxToShow = 5;

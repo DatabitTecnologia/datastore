@@ -39,7 +39,7 @@ const Login = () => {
       email +
       "' and TB01066_SENHA = '" +
       password +
-      "' and exists (SELECT TB01008_CODIGO FROM TB01008 WHERE TB01008_SITUACAO = 'A' AND TB01008_CODIGO = TB01066_CODCLI AND TB01008_REVENDAAUTORIZADA = 'S') ";
+      "' and exists (SELECT TB01008_CODIGO FROM TB01008 WHERE TB01008_SITUACAO = 'A' AND TB01008_CODIGO = TB01066_CODCLI) ";
     setLoading(true);
     const response = await apiFind('ClienteUser', '*', '', filter);
     const user = response.data;

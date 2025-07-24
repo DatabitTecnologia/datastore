@@ -8,6 +8,7 @@ import { capitalizeText } from 'datareact/src/utils/capitalize';
 import { Decode64 } from 'datareact/src/utils/crypto';
 import { LoadingOverlay } from '../../../../utils/databit/screenprocess';
 import { DATABIT } from '../../../../config/constant';
+import semfoto from '../../../../assets/images/databit/semfoto.png';
 
 const CarouselDestaque = () => {
   const navigate = useNavigate();
@@ -37,7 +38,7 @@ const CarouselDestaque = () => {
         consumption +
         "','" +
         tableprice +
-        "','S',null,'S')",
+        "','S',null,null,0,'S')",
       'codigo',
       'foto',
       ' 0 = 0 order by nome ',
@@ -111,7 +112,16 @@ const CarouselDestaque = () => {
                 style={{ marginTop: '5px', marginLeft: '2px', marginRight: '5px', cursor: 'pointer' }}
                 onClick={() => navigate('/produto/?produto=' + item.codigo)}
               >
-                <img src={`data:image/jpeg;base64,${item.picture}`} alt={item.codigo} width="100%" height="70%" />
+                {item.picture !== 'MHg=' ? (
+                  <img
+                    src={`data:image/jpeg;base64,${item.picture}`}
+                    alt={item.codigo}
+                    style={{ width: '100%', height: '70%', objectFit: 'contain' }}
+                  />
+                ) : (
+                  <img src={semfoto} alt={item.codigo} style={{ width: '100%', height: '70%', objectFit: 'contain' }} />
+                )}
+
                 <span className="label-destaque-16" style={{ textAlign: 'center' }}>
                   {capitalizeText(item.nome)}
                 </span>

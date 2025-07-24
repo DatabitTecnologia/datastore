@@ -12,6 +12,7 @@ import { LoadingOverlay } from '../../../utils/databit/screenprocess';
 import { Decode64 } from 'datareact/src/utils/crypto';
 import { StarRatingView } from '../../../components/StarRatingView';
 import { DATABIT } from '../../../config/constant';
+import semfoto from '../../../assets/images/databit/semfoto.png';
 
 const FilterProd = (props) => {
   const navigate = useNavigate();
@@ -267,7 +268,7 @@ const FilterProd = (props) => {
         consumption +
         "','" +
         tableprice +
-        "','N',null,'S')",
+        "','N',null,null,0,'S')",
       'codigo',
       'foto',
       filter,
@@ -288,16 +289,17 @@ const FilterProd = (props) => {
   };
 
   const typeobs = (item) => {
-    switch (parseInt(Decode64(sessionStorage.getItem('typeobs')))) {
-      case 1: {
+    const tipo = parseInt(Decode64(sessionStorage.getItem('typeobs')));
+
+    switch (tipo) {
+      case 1:
         return item.obs;
-      }
-      case 2: {
+      case 2:
         return item.obsint;
-      }
-      case 3: {
-        return item.obsfull;
-      }
+      case 3:
+        return `${item.obsint || ''}\n${item.obs || ''}`; // quebra de linha entre os dois
+      default:
+        return '';
     }
   };
 
@@ -554,7 +556,7 @@ const FilterProd = (props) => {
                           <div
                             key={item.id}
                             style={{
-                              height: '270px',
+                              height: '370px',
                               width: '100%',
                               display: 'flex',
                               justifyContent: 'center',
@@ -576,8 +578,16 @@ const FilterProd = (props) => {
                               }}
                               onClick={() => navigate('/produto/?produto=' + item.codigo)}
                             >
-                              <img src={`data:image/jpeg;base64,${item.picture}`} alt={item.codigo} width="50%" height="50%" />
-                              <span className="label-destaque-14">{capitalizeText(item.nome.substring(0, 50))}</span>
+                              {item.picture !== 'MHg=' ? (
+                                <img
+                                  src={`data:image/jpeg;base64,${item.picture}`}
+                                  alt={item.codigo}
+                                  style={{ width: '100%', height: '70%', objectFit: 'contain' }}
+                                />
+                              ) : (
+                                <img src={semfoto} alt={item.codigo} style={{ width: '100%', height: '70%', objectFit: 'contain' }} />
+                              )}
+                              <span className="label-destaque-14">{capitalizeText(item.nome.substring(0, 40))}</span>
                               {DATABIT.islogged && (
                                 <span className="color-price" style={{ textAlign: 'right', fontSize: '20px', marginRight: '100px' }}>
                                   R${' '}
@@ -614,14 +624,24 @@ const FilterProd = (props) => {
                             onClick={() => navigate('/produto/?produto=' + item.codigo)}
                           >
                             <Col lg={typefilter === -1 ? 4 : 3} style={{ textAlign: 'left' }}>
-                              <img src={`data:image/jpeg;base64,${item.picture}`} alt={item.codigo} width="220px" height="220px" />
+                              {item.picture !== 'MHg=' ? (
+                                <img
+                                  src={`data:image/jpeg;base64,${item.picture}`}
+                                  alt={item.codigo}
+                                  style={{ width: '220px', height: '220px', objectFit: 'contain' }}
+                                />
+                              ) : (
+                                <img src={semfoto} alt={item.codigo} style={{ width: '220px', height: '220px', objectFit: 'contain' }} />
+                              )}
                             </Col>
                             <Col lg={typefilter === -1 ? 5 : 6}>
                               <Row>
                                 <span className="label-destaque-16">{capitalizeText(item.nome.substring(0, 50))}</span>
                                 <StarRatingView rating={item.avaliacao ?? 0} size={20} showrating={true} />
                                 <PerfectScrollbar style={{ width: '100%', height: '100px', marginTop: '2px' }}>
-                                  <p style={{ fontSize: '13px', marginLeft: '2px', marginRight: '2px' }}>{typeobs(item)}</p>
+                                  <p style={{ fontSize: '0.9rem', marginLeft: '2px', marginRight: '2px', whiteSpace: 'pre-wrap' }}>
+                                    {typeobs(item)}
+                                  </p>
                                 </PerfectScrollbar>
                               </Row>
                             </Col>

@@ -5,6 +5,7 @@ import { apiGetPicturelist } from 'datareact/src/api/crudapi';
 import { useNavigate } from 'react-router-dom';
 import { Row } from 'react-bootstrap';
 import { capitalizeText } from 'datareact/src/utils/capitalize';
+import semfoto from '../../../../assets/images/databit/semfoto.png';
 
 const CarouselMarca = () => {
   const navigate = useNavigate();
@@ -84,7 +85,16 @@ const CarouselMarca = () => {
                 style={{ marginTop: '45px', marginLeft: '40px', marginRight: '40px', cursor: 'pointer' }}
                 onClick={() => navigate('/filter/?type=4&term=' + item.codigo + '&name=' + capitalizeText(item.nome))}
               >
-                <img src={`data:image/jpeg;base64,${item.picture}`} alt={item.codigo} width="100%" height="70%" />
+                {item.picture !== 'MHg=' ? (
+                  <img
+                    src={`data:image/jpeg;base64,${item.picture}`}
+                    alt={item.codigo}
+                    style={{ width: '100%', height: '70%', objectFit: 'contain' }}
+                  />
+                ) : (
+                  <img src={semfoto} alt={item.codigo} style={{ width: '100%', height: '70%', objectFit: 'contain' }} />
+                )}
+
                 <a className="label-destaque-16" style={{ textAlign: 'center' }}>
                   {capitalizeText(item.nome)}
                 </a>

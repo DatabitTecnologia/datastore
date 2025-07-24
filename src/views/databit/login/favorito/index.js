@@ -9,6 +9,7 @@ import { ShoppingCart, Trash2, MinusCircle } from 'react-feather';
 import { apiExec } from 'datareact/src/api/crudapi';
 import { LoadingOverlay } from '../../../../utils/databit/screenprocess';
 import { Decode64 } from 'datareact/src/utils/crypto';
+import semfoto from '../../../../assets/images/databit/semfoto.png';
 
 const LoginFavorito = ({ openDropdownFn, closeDropdown, listFavoritos }) => {
   const navigate = useNavigate();
@@ -159,7 +160,15 @@ const LoginFavorito = ({ openDropdownFn, closeDropdown, listFavoritos }) => {
                     >
                       <Row style={{ cursor: 'pointer' }} onClick={() => navigate(`/produto/?produto=${item.codigo}`)}>
                         <Col lg={3} style={{ textAlign: 'left' }}>
-                          <img src={`data:image/jpeg;base64,${item.picture}`} alt={item.codigo} width="130px" height="130px" />
+                          {item.picture !== 'MHg=' ? (
+                            <img
+                              src={`data:image/jpeg;base64,${item.picture}`}
+                              alt={item.codigo}
+                              style={{ width: '130px', height: '130px', objectFit: 'contain' }}
+                            />
+                          ) : (
+                            <img src={semfoto} alt={item.codigo} style={{ width: '130px', height: '130px', objectFit: 'contain' }} />
+                          )}
                         </Col>
 
                         <Col lg={7}>

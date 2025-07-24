@@ -14,20 +14,22 @@ const Navigation = () => {
   const configContext = useContext(ConfigContext);
   const [menu, setMenu] = useState({ items: [] });
   const [menurevenda, setMenurevenda] = useState({ items: [] });
+  const [carregamenu, setCarregamenu] = useState(false);
 
   const windowSize = useWindowSize();
 
   useEffect(() => {
-    console.log(DATABIT.islogged);
     const handleCarregarMenu = async () => {
       const menufim = await gerarMenu();
       setMenu(menufim);
       const menurevfim = await gerarMenurevenda();
-      console.log(menurevfim);
       setMenurevenda(menurevfim);
     };
-    handleCarregarMenu();
-  }, []);
+    if (!carregamenu) {
+      handleCarregarMenu();
+      setCarregamenu(true);
+    }
+  }, [carregamenu]);
 
   const {
     layout,

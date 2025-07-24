@@ -61,7 +61,7 @@ export const gerarMenu = async () => {
     children: [
       {
         id: 'grupomodelo',
-        title: 'Meu Modelo',
+        title: 'Modelo',
         type: 'collapse',
         icon: 'feather icon-cast',
         children: []
@@ -147,6 +147,7 @@ export const gerarMenu = async () => {
   }
 
   const responsemodelo = await apiList('MarcaCompatibilidadeVW', '*', '', ' 0 = 0 order by nomemarca,nomequip');
+  console.log(responsemodelo.data);
 
   if (responsemodelo.status === 200) {
     const resultmodelo = responsemodelo.data;
@@ -174,6 +175,7 @@ export const gerarMenu = async () => {
         children: []
       };
       const equipamentos = resultmodelo.filter((x) => x.codigomarca === marca.codigomarca);
+      let i = 0;
       for (const equipamento of equipamentos) {
         const equipItem = {
           id: 'e' + equipamento.codequip,
@@ -203,7 +205,7 @@ export const gerarMenurevenda = async () => {
     children: [
       {
         id: 'filtro',
-        title: 'Seja um Revendedor',
+        title: 'Seja uma Revenda',
         type: 'item',
         icon: 'feather icon-shopping-cart',
         classes: 'nav-item',
