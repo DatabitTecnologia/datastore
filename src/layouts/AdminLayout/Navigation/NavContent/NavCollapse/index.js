@@ -75,6 +75,21 @@ const NavCollapse = ({ collapse, type }) => {
     }
   }
 
+  const groupedItems = [];
+  for (let i = 0; i < navItems.length; i += 15) {
+    groupedItems.push(navItems.slice(i, i + 15));
+  }
+
+  const NavFloat = (
+    <React.Fragment>
+      {groupedItems.map((group, index) => (
+        <ListGroup key={index} variant="flush" bsPrefix=" " as="ul" className="pcoded-submenu">
+          {group}
+        </ListGroup>
+      ))}
+    </React.Fragment>
+  );
+
   const subContent = (
     <React.Fragment>
       <Link
@@ -86,16 +101,14 @@ const NavCollapse = ({ collapse, type }) => {
         {itemTitle}
         <NavBadge items={collapse} />
       </Link>
-      <ListGroup
-        variant="flush"
-        bsPrefix=" "
-        as="ul"
-        className={navItems.length > 10 ? 'pcoded-submenu horizontal-scroll' : 'pcoded-submenu'}
-      >
+
+      <ListGroup variant="flush" bsPrefix=" " as="ul" className={'pcoded-submenu'}>
         {navItems}
       </ListGroup>
     </React.Fragment>
   );
+
+  //className={navItems.length > 100 ? 'pcoded-submenu horizontal-scroll' : 'pcoded-submenu'}
 
   let mainContent = '';
   if (layout === 'horizontal') {

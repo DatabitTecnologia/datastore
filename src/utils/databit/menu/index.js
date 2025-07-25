@@ -166,7 +166,9 @@ export const gerarMenu = async () => {
     });
 
     for (const marca of marcasUnicas) {
-      const marcaItem = {
+      const equipamentos = resultmodelo.filter((x) => x.codigomarca === marca.codigomarca);
+
+      let marcaItem = {
         id: 'c' + marca.codigomarca,
         title: capitalizeText(marca.nomemarca),
         type: 'collapse',
@@ -174,25 +176,54 @@ export const gerarMenu = async () => {
         breadcrumbs: false,
         children: []
       };
-      const equipamentos = resultmodelo.filter((x) => x.codigomarca === marca.codigomarca);
-      let i = 0;
-      for (const equipamento of equipamentos) {
-        const equipItem = {
-          id: 'e' + equipamento.codequip,
-          title: capitalizeText(equipamento.nomequip),
-          type: 'item',
-          target: false,
-          breadcrumbs: false,
-          url: '/filter/?type=5&term=' + equipamento.codequip + '&name=' + capitalizeText(equipamento.nomequip)
-        };
-        marcaItem.children.push(equipItem);
+
+      if (equipamentos.length <= 10) {
+        // Comportamento atual
+        for (const equipamento of equipamentos) {
+          marcaItem.children.push({
+            id: 'e' + equipamento.codequip,
+            title: capitalizeText(equipamento.nomequip),
+            type: 'item',
+            target: false,
+            breadcrumbs: false,
+            url: '/filter/?type=5&term=' + equipamento.codequip + '&name=' + capitalizeText(equipamento.nomequip)
+          });
+        }
+      } else {
+        // Novo comportamento com faixas
+        const chunkSize = 10;
+        for (let i = 0; i < equipamentos.length; i += chunkSize) {
+          const faixa = equipamentos.slice(i, i + chunkSize);
+          const faixaLabel = `${i + 1} a ${i + faixa.length}`;
+
+          const faixaItem = {
+            id: `faixa_${marca.codigomarca}_${i}`,
+            title: faixaLabel,
+            type: 'collapse',
+            children: []
+          };
+
+          for (const equipamento of faixa) {
+            faixaItem.children.push({
+              id: 'e' + equipamento.codequip,
+              title: capitalizeText(equipamento.nomequip),
+              type: 'item',
+              target: false,
+              breadcrumbs: false,
+              url: '/filter/?type=5&term=' + equipamento.codequip + '&name=' + capitalizeText(equipamento.nomequip)
+            });
+          }
+
+          marcaItem.children.push(faixaItem);
+        }
       }
+
       menuModelo.children[0].children.push(marcaItem);
     }
   }
 
   const menuItens = { items: [menuHome, menuModelo, menuGrupo, menuMarca, menuFilter] };
-
+  console.log(menuItens);
   return menuItens;
 };
 

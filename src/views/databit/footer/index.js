@@ -1,57 +1,90 @@
 import React from 'react';
-import { FaInstagram, FaFacebook, FaWhatsapp } from 'react-icons/fa';
+import { FaEnvelope, FaWhatsapp, FaGlobe, FaInstagram, FaLinkedin } from 'react-icons/fa';
+import { Decode64 } from 'datareact/src/utils/crypto';
 
 const Footer = () => {
   return (
-    <footer className="footer">
-      <div className="footer-container">
-        {/* Marca */}
-        <div className="footer-section">
-          <h2 className="footer-logo">Minha Loja</h2>
-          <p>Sua loja de confiança para eletrônicos, moda e muito mais.</p>
-        </div>
-
-        {/* Links úteis */}
-        <div className="footer-section">
-          <h4>Links úteis</h4>
-          <ul>
-            <li>
-              <a href="/sobre">Sobre nós</a>
-            </li>
-            <li>
-              <a href="/politica">Política de Privacidade</a>
-            </li>
-            <li>
-              <a href="/trocas">Trocas e Devoluções</a>
-            </li>
-            <li>
-              <a href="/contato">Fale conosco</a>
-            </li>
-          </ul>
-        </div>
-
-        {/* Contato */}
-        <div className="footer-section">
-          <h4>Atendimento</h4>
-          <p>WhatsApp: (11) 99999-9999</p>
-          <p>Email: contato@minhaloja.com</p>
-          <p>Seg a Sex: 9h às 18h</p>
-        </div>
-
-        {/* Redes sociais */}
-        <div className="footer-section">
-          <h4>Redes sociais</h4>
-          <div className="footer-socials">
-            <a href="#">Instagram</a>
-            <a href="#">Facebook</a>
-            <a href="#">WhatsApp</a>
+    <footer style={{ background: sessionStorage.getItem('colorMenu'), color: '#fff', padding: '30px 20px', fontFamily: 'sans-serif' }}>
+      <div
+        style={{
+          maxWidth: '1200px',
+          margin: '0 auto',
+          display: 'flex',
+          flexWrap: 'wrap',
+          alignItems: 'center',
+          justifyContent: 'space-between'
+        }}
+      >
+        {/* Logo + Endereço */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '20px', flexWrap: 'wrap' }}>
+          <div style={{ fontSize: '30px', fontWeight: 'bold', marginRight: '30px' }}>
+            <img className="b-logo-login" src={`data:image/jpeg;base64,${sessionStorage.getItem('logofooter')}`} alt="Logo" />
           </div>
+          <div style={{ fontSize: '16px', maxWidth: '500px' }}>{Decode64(sessionStorage.getItem('address'))}</div>
+        </div>
+
+        {/* Ícones de contato */}
+        <div style={{ background: sessionStorage.getItem('colorMenu'), display: 'flex', gap: '10px', marginTop: '10px' }}>
+          <a href={'mailto:' + Decode64(sessionStorage.getItem('emailemp'))} target="_blank" rel="noreferrer">
+            <IconWrapper>
+              <FaEnvelope />
+            </IconWrapper>
+          </a>
+
+          <a href={'https://wa.me/' + Decode64(sessionStorage.getItem('whatsapp'))} target="_blank" rel="noreferrer">
+            <IconWrapper>
+              <FaWhatsapp />
+            </IconWrapper>
+          </a>
+
+          <a href={Decode64(sessionStorage.getItem('home'))} target="_blank" rel="noreferrer">
+            <IconWrapper>
+              <FaGlobe />
+            </IconWrapper>
+          </a>
+
+          <a href={'https://www.instagram.com/' + Decode64(sessionStorage.getItem('instagram'))} target="_blank" rel="noreferrer">
+            <IconWrapper>
+              <FaInstagram />
+            </IconWrapper>
+          </a>
+
+          <a href={'https://www.linkedin.com/company/' + Decode64(sessionStorage.getItem('linkedin'))} target="_blank" rel="noreferrer">
+            <IconWrapper>
+              <FaLinkedin />
+            </IconWrapper>
+          </a>
         </div>
       </div>
 
-      <div className="footer-bottom">© {new Date().getFullYear()} Minha Loja. Todos os direitos reservados.</div>
+      <hr style={{ margin: '20px 0', borderColor: '#fff' }} />
+
+      <div style={{ marginBottom: '10px', textAlign: 'center' }}>
+        <div className="site-databit">
+          <a className="fa-xs" style={{ color: '#fff', fontSize: '14px' }} href="https://www.databit.com.br/" target="blank">
+            Copyright © 2025 by DataBit Tecnologia e Sistemas LTDA. All rights reserved
+          </a>
+        </div>
+      </div>
     </footer>
   );
 };
+
+const IconWrapper = ({ children }) => (
+  <div
+    style={{
+      background: sessionStorage.getItem('colorMenuselec'),
+      padding: '10px',
+      borderRadius: '4px',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      color: '#fff',
+      cursor: 'pointer'
+    }}
+  >
+    {children}
+  </div>
+);
 
 export default Footer;
