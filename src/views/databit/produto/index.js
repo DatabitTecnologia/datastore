@@ -218,7 +218,7 @@ const Produto = (props) => {
       <StarRatingView rating={itemselec.avaliacao ?? 0} size={25} showrating={true} />
       <PerfectScrollbar
         options={{ suppressScrollX: true, suppressScrollY: false }}
-        style={{ width: '100%', height: '340px', marginTop: '10px' }}
+        style={{ width: '100%', height: '290px', marginTop: '10px' }}
       >
         <p style={{ fontSize: '0.9rem', marginLeft: '2px', marginRight: '2px', whiteSpace: 'pre-wrap' }}>{typeobs(itemselec)}</p>
       </PerfectScrollbar>

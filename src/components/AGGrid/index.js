@@ -2,7 +2,9 @@ import React, { useRef, useState, useEffect, useCallback } from 'react';
 import { AgGridReact } from 'ag-grid-react';
 import { ModuleRegistry } from 'ag-grid-community';
 import { AllCommunityModule } from 'ag-grid-community';
-import { Button, Modal, ModalBody, Form, Row, Col } from 'react-bootstrap';
+import { Button, Modal, ModalBody, Row, Col } from 'react-bootstrap';
+import Carousel from 'react-multi-carousel';
+import 'react-multi-carousel/lib/styles.css';
 import { Box } from '@mui/material';
 import Tooltip from '@mui/material/Tooltip';
 import IconButton from '@mui/material/IconButton';
@@ -13,13 +15,10 @@ import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import FunctionsIcon from '@mui/icons-material/Functions';
-import PrintIcon from '@mui/icons-material/Print';
 import FileUploadIcon from '@mui/icons-material/FileUpload';
 import ReportOptions from '../Report/options';
 import PaletteIcon from '@mui/icons-material/Palette';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
-import CheckBox from '@mui/icons-material/CheckBox';
-import CheckBoxOutlineBlank from '@mui/icons-material/CheckBoxOutlineBlank';
 import { AG_GRID_LOCALE_BR } from './locale';
 import { exportToExcelFull } from 'datareact/src/utils/excel';
 import { shallowEqual } from 'datareact/src/utils/shallowEqual';
@@ -51,7 +50,8 @@ const AGGrid = (props) => {
     permprint = true,
     focus = false,
     forcefocus = false,
-    tools = true
+    tools = true,
+    totalizadores
   } = props;
 
   const gridRef = useRef();
@@ -500,6 +500,19 @@ const AGGrid = (props) => {
     }
   };
 
+  const moeda = (v) =>
+    new Intl.NumberFormat('pt-BR', {
+      style: 'currency',
+      currency: 'BRL'
+    }).format(v);
+
+  const responsive = {
+    superLargeDesktop: { breakpoint: { max: 4000, min: 1024 }, items: 5 },
+    desktop: { breakpoint: { max: 1024, min: 768 }, items: 4 },
+    tablet: { breakpoint: { max: 768, min: 464 }, items: 3 },
+    mobile: { breakpoint: { max: 464, min: 0 }, items: 2 }
+  };
+
   return (
     <Box
       sx={{
@@ -528,35 +541,54 @@ const AGGrid = (props) => {
             opacity: disabled ? 0.5 : 1
           }}
         >
-          <AgGridReact
-            id={id}
-            key={key}
-            ref={gridRef}
-            rowData={rows}
-            columnDefs={columnDefs}
-            localeText={AG_GRID_LOCALE_BR}
-            rowSelection={{ mode: checked || multselec ? 'multiRow' : 'single' }}
-            defaultColDef={defaultColDef}
-            onCellFocused={onCellFocused}
-            rowHeight={rowHeight !== undefined ? rowHeight : 27}
-            onGridReady={onGridReady}
-            loadingOverlayComponent={loadingOverlayComponent}
-            getRowStyle={getRowStyle}
-            onCellKeyDown={onCellKeyDown}
-            onCellClicked={onCellClicked}
-            onRowDoubleClicked={onRowDoubleClicked}
-            onSelectionChanged={onSelectionChanged}
-            onFirstDataRendered={onFirstDataRendered}
-            onFilterChanged={onFilterChanged}
-            groupIncludeFooter={grouped}
-            groupIncludeTotalFooter={grouped}
-            onModelUpdated={(params) => {
-              if (columns && columns.length > 0 && focus) {
-                params.api.ensureIndexVisible(!forcefocus ? rowID : 0);
-                params.api.setFocusedCell(!forcefocus ? rowID : 0, columns[0].field);
-              }
-            }}
-          />
+          <div style={{ height: totalizadores ? '82%' : '100%' }}>
+            <AgGridReact
+              id={id}
+              key={key}
+              ref={gridRef}
+              rowData={rows}
+              columnDefs={columnDefs}
+              localeText={AG_GRID_LOCALE_BR}
+              rowSelection={{ mode: checked || multselec ? 'multiRow' : 'single' }}
+              defaultColDef={defaultColDef}
+              onCellFocused={onCellFocused}
+              rowHeight={rowHeight !== undefined ? rowHeight : 27}
+              onGridReady={onGridReady}
+              loadingOverlayComponent={loadingOverlayComponent}
+              getRowStyle={getRowStyle}
+              onCellKeyDown={onCellKeyDown}
+              onCellClicked={onCellClicked}
+              onRowDoubleClicked={onRowDoubleClicked}
+              onSelectionChanged={onSelectionChanged}
+              onFirstDataRendered={onFirstDataRendered}
+              onFilterChanged={onFilterChanged}
+              groupIncludeFooter={grouped}
+              groupIncludeTotalFooter={grouped}
+              onModelUpdated={(params) => {
+                if (columns && columns.length > 0 && focus) {
+                  params.api.ensureIndexVisible(!forcefocus ? rowID : 0);
+                  params.api.setFocusedCell(!forcefocus ? rowID : 0, columns[0].field);
+                }
+              }}
+            />
+          </div>
+          {totalizadores && (
+            <div style={{ height: '18%', display: 'flex', justifyContent: 'flex-end' }}>
+              <div style={{ maxWidth: '1260px', width: '100%' }}>
+                <Carousel responsive={responsive} infinite autoPlay autoPlaySpeed={3000} keyBoardControl arrows={false} showDots={false}>
+                  {totalizadores.map((item, index) => (
+                    <Item
+                      key={index}
+                      icon={item.icon}
+                      title={item.data.title}
+                      value={item.data.decimal === 0 ? item.data.value : moeda(item.data.value)}
+                      color={item.color}
+                    />
+                  ))}
+                </Carousel>
+              </div>
+            </div>
+          )}
         </div>
 
         {tools && (
@@ -591,7 +623,7 @@ const AGGrid = (props) => {
                 </IconButton>
               </Tooltip>
 
-              {isnumber ? (
+              {isnumber && !totalizadores ? (
                 <Tooltip title="Somar" arrow>
                   <IconButton size="small" onClick={() => calcularTotais('sum')}>
                     <FunctionsIcon />
@@ -748,3 +780,36 @@ const AGGrid = (props) => {
 };
 
 export default AGGrid;
+
+const Item = ({ title, icon, value = 0, color = '#333' }) => (
+  <div
+    className="rounded-2xl shadow-md p-1 bg-white border"
+    style={{
+      display: 'flex',
+      flexDirection: 'column',
+      justifyContent: 'space-between',
+      fontFamily: `'Segoe UI', sans-serif`,
+      borderRadius: '12px',
+      marginTop: '6px',
+      marginRight: '10px'
+    }}
+  >
+    <div className="flex items-center gap-1 text-sm font-medium text-gray-200">
+      <span style={{ color, marginLeft: '10px' }}>{React.cloneElement(icon, { size: 25 })}</span>
+      <span style={{ marginLeft: '15px' }} className="label-destaque-14">
+        {title}
+      </span>
+      <div
+        className="label-destaque-16"
+        style={{
+          color: '#333',
+          textAlign: 'right',
+          marginRight: '10px',
+          fontWeight: 'bold'
+        }}
+      >
+        {value}
+      </div>
+    </div>
+  </div>
+);

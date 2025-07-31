@@ -1,14 +1,18 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Card, Row } from 'react-bootstrap';
+import { Row, Col, Button, Card } from 'react-bootstrap';
 import Carousel from 'react-multi-carousel';
+import { DollarSign, Hash } from 'react-feather';
 import 'react-multi-carousel/lib/styles.css';
-
+import DatePicker from 'react-datepicker';
+import { getDefaultStartDate, getDefaultEndDate } from '../../../../utils/databit/dateutils';
 import { apiList } from 'datareact/src/api/crudapi';
 import { Decode64 } from 'datareact/src/utils/crypto';
-
 import AGGrid from '../../../../components/AGGrid';
 import Pie from '../../../../components/Pie';
 import { LoadingOverlay } from '../../../../utils/databit/screenprocess';
+import 'react-datepicker/dist/react-datepicker.css';
+import { downloadXML, gerarNFe } from 'datareact/src/api/nfe';
+import { totalizarLista } from '../../../../utils/databit/total';
 
 // === Utilitários externos ===
 
@@ -74,6 +78,9 @@ const LoginCompra = () => {
   const [loading, setLoading] = useState(false);
   const [itemselec, setItemselec] = useState([]);
   const [itens, setItens] = useState([]);
+  const [startDate, setStartDate] = useState(getDefaultStartDate());
+  const [endDate, setEndDate] = useState(getDefaultEndDate());
+  const [totais, setTotais] = useState([]);
 
   const columns = useMemo(
     () => [
@@ -81,9 +88,9 @@ const LoginCompra = () => {
       { headerClassName: 'header-list', field: 'data', headerName: 'Data', width: 110, type: 'date' },
       { headerClassName: 'header-list', field: 'qtde', headerName: 'Qtde.', width: 80, type: 'number' },
       { headerClassName: 'header-list', field: 'valor', headerName: 'R$ Compra', width: 110, type: 'number', decimal: 2 },
-      { headerClassName: 'header-list', field: 'pgto', headerName: 'Condição Pgto', width: 200 },
-      { headerClassName: 'header-list', field: 'transp', headerName: 'Transportadora', width: 220 },
-      { headerClassName: 'header-list', field: 'cfop', headerName: 'Natureza Operação', width: 350 }
+      { headerClassName: 'header-list', field: 'pgto', headerName: 'Condição Pgto', width: 180 },
+      { headerClassName: 'header-list', field: 'operacao', headerName: 'Operação de Venda', width: 220 },
+      { headerClassName: 'header-list', field: 'numnfe', headerName: 'Número NFe', width: 370 }
     ],
     []
   );
@@ -98,14 +105,7 @@ const LoginCompra = () => {
   );
 
   useEffect(() => {
-    setLoading(true);
-    const codcli = Decode64(sessionStorage.getItem('client'));
-    apiList('RevendedorCompraVW', '*', '', `codcli = '${codcli}'`).then((response) => {
-      if (response.status === 200) {
-        setRows(response.data);
-        setLoading(false);
-      }
-    });
+    Filtrar();
   }, []);
 
   useEffect(() => {
@@ -115,12 +115,45 @@ const LoginCompra = () => {
       { title: 'Ranking por Mês', data: agruparESomar(rows, 'mes') },
       { title: 'Ranking por Ano', data: agruparESomar(rows, 'ano') },
       { title: 'Ranking por Condição de Pagto', data: agruparESomar(rows, 'pgto') },
-      { title: 'Ranking por Transportadora', data: agruparESomar(rows, 'transp') },
-      { title: 'Ranking por CFOP', data: agruparESomar(rows, 'cfop') }
+      { title: 'Ranking por Operação', data: agruparESomar(rows, 'operacao') }
+    ];
+
+    const tmptotais = [
+      { data: totalizarLista(rows, 'qtde', 'Quantidade de Itens', 0), icon: <Hash></Hash>, color: '#00cc00' },
+      { data: totalizarLista(rows, 'valor', 'Total de Compras', 2), icon: <DollarSign></DollarSign>, color: '#0099ff' }
     ];
 
     setItens(tmpitens);
+    setTotais(tmptotais);
   }, [rows]);
+
+  const Filtrar = () => {
+    setLoading(true);
+    const codcli = Decode64(sessionStorage.getItem('client'));
+    let filter = "codcli = '" + codcli + "' ";
+    const tmdata1 = Date.parse(startDate);
+    const dt1 = new Date(tmdata1);
+    const data1 = dt1.toLocaleDateString('en-US');
+
+    const tmdata2 = Date.parse(endDate);
+    const dt2 = new Date(tmdata2);
+    const data2 = dt2.toLocaleDateString('en-US');
+
+    filter += " and data BETWEEN '" + data1 + " 00:00:00' AND '" + data2 + " 23:59:00' ";
+
+    apiList('RevendedorCompraVW', '*', '', filter).then((response) => {
+      if (response.status === 200) {
+        setRows(response.data);
+        setLoading(false);
+      }
+    });
+  };
+
+  const NFe = async () => {
+    setLoading(true);
+    await gerarNFe('NFe' + itemselec.numnfe + '.PDF', itemselec.xml);
+    setLoading(false);
+  };
 
   return (
     <div>
@@ -128,6 +161,61 @@ const LoginCompra = () => {
         <Card.Header>
           <Card.Title as="h5">Minhas Últimas Compras</Card.Title>
         </Card.Header>
+        <Row style={{ padding: '10px' }}>
+          <Col lg={3}>
+            <Row>
+              <Col>
+                <label className="form-label">Período de:</label>
+                <DatePicker
+                  selected={startDate}
+                  onChange={setStartDate}
+                  className="form-control"
+                  popperClassName="custom-datepicker-popper"
+                  placeholderText="DD/MM/AAAA"
+                  dateFormat="dd/MM/yyyy"
+                  locale="en"
+                />
+              </Col>
+              <Col>
+                <label className="form-label">Até:</label>
+                <DatePicker
+                  selected={endDate}
+                  onChange={setEndDate}
+                  className="form-control"
+                  popperClassName="custom-datepicker-popper"
+                  placeholderText="DD/MM/AAAA"
+                  dateFormat="dd/MM/yyyy"
+                  locale="en"
+                />
+              </Col>
+            </Row>
+          </Col>
+
+          <Col style={{ marginTop: '30px' }}>
+            <Row style={{ textAlign: 'right' }}>
+              <Col>
+                <Button className="btn color-button-primary shadow-2  mb-3" onClick={(e) => Filtrar()}>
+                  <i className={'feather icon-filter'} /> Filtrar
+                </Button>
+                {itemselec && (
+                  <Button
+                    className="btn color-button-primary shadow-2  mb-3"
+                    disabled={!itemselec.numnfe}
+                    onClick={(e) => downloadXML(itemselec.xml, 'NFe' + itemselec.numnfe + '.xml')}
+                  >
+                    <i className={'feather icon-download'} /> Download XML
+                  </Button>
+                )}
+                {itemselec && (
+                  <Button className="btn color-button-primary shadow-2  mb-3" disabled={!itemselec.numnfe} onClick={(e) => NFe()}>
+                    <i className={'feather icon-printer'} /> Imprimir Danfe
+                  </Button>
+                )}
+              </Col>
+            </Row>
+          </Col>
+        </Row>
+
         <Row style={{ padding: '10px' }}>
           <AGGrid
             width="100%"
@@ -138,6 +226,7 @@ const LoginCompra = () => {
             item={itemselec}
             setItem={setItemselec}
             focus
+            totalizadores={totais}
           />
         </Row>
       </Card>
