@@ -15,11 +15,12 @@ const Dropdown = ({ options, label, onChange, style }) => {
     <div className="dropdown-container" style={style}>
       {label && <label className="dropdown-label">{label}</label>}
       <select className="dropdown-select" value={selected} onChange={handleChange}>
-        {options.map((opt) => (
-          <option key={opt.value} value={opt.value}>
-            {opt.label}
-          </option>
-        ))}
+        {options &&
+          options.map((opt) => (
+            <option key={opt.value} value={opt.value}>
+              {opt.label}
+            </option>
+          ))}
       </select>
     </div>
   );

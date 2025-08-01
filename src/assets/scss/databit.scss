@@ -422,6 +422,10 @@ body {
   background: var(--colorButtonprimary);
 }
 
+.color-button-primary:disabled {
+  background: var(--colorMenuselec);
+}
+
 .color-button-primary:hover {
   background: var(--colorMenuselec);
 }

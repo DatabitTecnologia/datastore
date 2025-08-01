@@ -122,7 +122,6 @@ const Produto = (props) => {
     );
     if (response.status === 200) {
       setItemselec(response.data[0]);
-      console.log(response.data[0]);
     }
     setLoading(false);
   };

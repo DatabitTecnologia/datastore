@@ -44,13 +44,18 @@ export const adicionarCarrinho = async (produto, qtde) => {
 
     sessionStorage.setItem('store', Encode64(carrinho.codigo));
 
-    const respproduto = await apiFind('ProdmovVW', '*', '', `codemp = '${carrinho.codemp}' and produto = '${produto.codigo}'`);
+    const respproduto = await apiFind(
+      'ProdmovVW',
+      '*',
+      '',
+      `codemp = '${carrinho.codemp}' and produto = '${produto.codigo ? produto.codigo : produto.produto}'`
+    );
     const prodSelec = respproduto.data;
 
     const resppreco = await apiExec(
-      `exec SP02303 'TB02310','${carrinho.codigo}','${produto.codigo}','${carrinho.codemp}','${carrinho.codcli}','TB01008','S',0,'${get(
-        'tableprice'
-      )}'`,
+      `exec SP02303 'TB02310','${carrinho.codigo}','${produto.codigo ? produto.codigo : produto.produto}','${carrinho.codemp}','${
+        carrinho.codcli
+      }','TB01008','S',0,'${get('tableprice')}'`,
       'S'
     );
     const produtoPreco = resppreco.data;
@@ -185,7 +190,12 @@ export const adicionarCarrinho = async (produto, qtde) => {
     };
 
     let inclusao = true;
-    const res = await apiFind('CarrinhoItem', '*', '', `TB02311_CODIGO = '${carrinho.codigo}' AND TB02311_PRODUTO = '${produto.codigo}'`);
+    const res = await apiFind(
+      'CarrinhoItem',
+      '*',
+      '',
+      `TB02311_CODIGO = '${carrinho.codigo}' AND TB02311_PRODUTO = '${produto.codigo ? produto.codigo : produto.produto}'`
+    );
 
     if (res.status === 200 && res.data?.produto) {
       inclusao = false;
