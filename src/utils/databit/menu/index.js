@@ -147,7 +147,6 @@ export const gerarMenu = async () => {
   }
 
   const responsemodelo = await apiList('MarcaCompatibilidadeVW', '*', '', ' 0 = 0 order by nomemarca,nomequip');
-  console.log(responsemodelo.data);
 
   if (responsemodelo.status === 200) {
     const resultmodelo = responsemodelo.data;
@@ -223,7 +222,6 @@ export const gerarMenu = async () => {
   }
 
   const menuItens = { items: [menuHome, menuModelo, menuGrupo, menuMarca, menuFilter] };
-  console.log(menuItens);
   return menuItens;
 };
 

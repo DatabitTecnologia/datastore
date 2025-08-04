@@ -791,8 +791,9 @@ const Item = ({ title, icon, value = 0, color = '#333' }) => (
       justifyContent: 'space-between',
       fontFamily: `'Segoe UI', sans-serif`,
       borderRadius: '12px',
-      marginTop: '6px',
-      marginRight: '10px'
+      marginTop: '3px',
+      marginRight: '10px',
+      height: '88%'
     }}
   >
     <div className="flex items-center gap-1 text-sm font-medium text-gray-200">

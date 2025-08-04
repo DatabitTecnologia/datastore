@@ -1,17 +1,21 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Card, Row } from 'react-bootstrap';
+import { Card, Row, Col, Button } from 'react-bootstrap';
 import Carousel from 'react-multi-carousel';
 import 'react-multi-carousel/lib/styles.css';
-
-import { apiList } from 'datareact/src/api/crudapi';
+import { DollarSign } from 'react-feather';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
+import { apiList, apiDropdown } from 'datareact/src/api/crudapi';
 import { Decode64 } from 'datareact/src/utils/crypto';
-
 import AGGrid from '../../../../components/AGGrid';
 import Pie from '../../../../components/Pie';
 import { LoadingOverlay } from '../../../../utils/databit/screenprocess';
 import pago from '../../../../assets/images/databit/pago.png';
 import vencido from '../../../../assets/images/databit/vencido.png';
 import vencer from '../../../../assets/images/databit/avencer.png';
+import Dropdown from '../../../../components/Dropdown';
+import { getDefaultStartDate, getDefaultEndDate } from '../../../../utils/databit/dateutils';
+import { totalizarLista } from '../../../../utils/databit/total';
 
 // === Utilitários externos ===
 
@@ -85,6 +89,12 @@ const LoginFinanceiro = () => {
   const [loading, setLoading] = useState(false);
   const [itemselec, setItemselec] = useState([]);
   const [itens, setItens] = useState([]);
+  const [startDate, setStartDate] = useState(getDefaultStartDate());
+  const [endDate, setEndDate] = useState(getDefaultEndDate());
+  const [totais, setTotais] = useState([]);
+  const [situacoes, setSituacoes] = useState([]);
+  const [situacaoselec, setSituacaoselec] = useState('ALL');
+  const [tipodata, setTipodata] = useState(-1);
 
   const columns = useMemo(
     () => [
@@ -135,14 +145,67 @@ const LoginFinanceiro = () => {
 
   useEffect(() => {
     setLoading(true);
+    let tmpsituacoes = [];
+    tmpsituacoes.push({ value: 'ALL', label: 'Todas os Títulos' });
+    apiDropdown('VW04057', 'possituacao', 'situacao', '').then((response) => {
+      if (response.status === 200) {
+        const listsituacoes = response.data;
+        listsituacoes.forEach((element) => {
+          tmpsituacoes.push(element);
+        });
+        tmpsituacoes.push({ value: 3, label: 'Em aberto' });
+        setSituacoes(tmpsituacoes);
+      }
+    });
+  }, []);
+
+  useEffect(() => {
+    Filtrar();
+  }, [situacoes]);
+
+  const Filtrar = () => {
+    setLoading(true);
     const codcli = Decode64(sessionStorage.getItem('client'));
-    apiList('RevendedorFinanceiroVW', '*', '', `codcli = '${codcli}'`).then((response) => {
+    let filter = "codcli = '" + codcli + "'";
+
+    const tmdata1 = Date.parse(startDate);
+    const dt1 = new Date(tmdata1);
+    const data1 = dt1.toLocaleDateString('en-US');
+
+    const tmdata2 = Date.parse(endDate);
+    const dt2 = new Date(tmdata2);
+    const data2 = dt2.toLocaleDateString('en-US');
+
+    switch (parseInt(tipodata)) {
+      case 0: {
+        filter += " and data BETWEEN '" + data1 + " 00:00:00' AND '" + data2 + " 23:59:00' ";
+        break;
+      }
+      case 1: {
+        filter += " and dtvenc BETWEEN '" + data1 + " 00:00:00' AND '" + data2 + " 23:59:00' ";
+        break;
+      }
+      case 2: {
+        filter += " and dtbaixa BETWEEN '" + data1 + " 00:00:00' AND '" + data2 + " 23:59:00' ";
+        break;
+      }
+    }
+
+    if (situacaoselec !== 'ALL') {
+      if (situacaoselec !== '3') {
+        filter += " and possituacao = '" + situacaoselec + "' ";
+      } else {
+        filter += " and possituacao <> '1' ";
+      }
+    }
+    console.log(filter);
+    apiList('RevendedorFinanceiroVW', '*', '', filter).then((response) => {
       if (response.status === 200) {
         setRows(response.data);
         setLoading(false);
       }
     });
-  }, []);
+  };
 
   useEffect(() => {
     if (!rows.length) return;
@@ -153,7 +216,26 @@ const LoginFinanceiro = () => {
       { title: 'Ranking por Tipo Documento', data: agruparESomar(rows, 'tipodoc') }
     ];
 
+    const tmptotais = [
+      { data: totalizarLista(rows, 'vlrbruto', 'Total Bruto', 2), icon: <DollarSign></DollarSign>, color: '#00cc00' },
+      { data: totalizarLista(rows, 'vlrdesconto', 'Total Desconto', 2), icon: <DollarSign></DollarSign>, color: '#ff6600' },
+      { data: totalizarLista(rows, 'vlracres', 'Total Acréscimo', 2), icon: <DollarSign></DollarSign>, color: '#bbff00' },
+      { data: totalizarLista(rows, 'vlrtitulo', 'Total Líquido', 2), icon: <DollarSign></DollarSign>, color: '#2500cc' },
+      {
+        data: totalizarLista(rows, 'vlrvencer', 'Total à Vencer', 2),
+        icon: <DollarSign></DollarSign>,
+        color: '#59f5a7'
+      },
+      {
+        data: totalizarLista(rows, 'vlrvencido', 'Total Vencido', 2),
+        icon: <DollarSign></DollarSign>,
+        color: '#ff000d'
+      },
+      { data: totalizarLista(rows, 'vlrpago', 'Total Pago', 2), icon: <DollarSign></DollarSign>, color: '#539af8' }
+    ];
+
     setItens(tmpitens);
+    setTotais(tmptotais);
   }, [rows]);
 
   return (
@@ -163,16 +245,81 @@ const LoginFinanceiro = () => {
           <Card.Title as="h5">Minha Posição Financeira</Card.Title>
         </Card.Header>
         <Row style={{ padding: '10px' }}>
+          <Col lg={10}>
+            <Row>
+              <Col lg={2}>
+                <Dropdown
+                  label="Filtro por:"
+                  style={{ marginTop: '1px', width: '150px' }}
+                  options={[
+                    { value: -1, label: 'Sem filtro' },
+                    { value: 0, label: 'Emissão' },
+                    { value: 1, label: 'Vencimento' },
+                    { value: 2, label: 'Pagamento' }
+                  ]}
+                  onChange={(e) => setTipodata(e)}
+                />
+              </Col>
+              <Col lg={2}>
+                <label className="form-label">Período de:</label>
+                <DatePicker
+                  selected={startDate}
+                  onChange={setStartDate}
+                  className="form-control"
+                  popperClassName="custom-datepicker-popper"
+                  placeholderText="DD/MM/AAAA"
+                  dateFormat="dd/MM/yyyy"
+                  locale="en"
+                  disabled={tipodata === -1}
+                />
+              </Col>
+              <Col lg={2}>
+                <label className="form-label">Até:</label>
+                <DatePicker
+                  selected={endDate}
+                  onChange={setEndDate}
+                  className="form-control"
+                  popperClassName="custom-datepicker-popper"
+                  placeholderText="DD/MM/AAAA"
+                  dateFormat="dd/MM/yyyy"
+                  locale="en"
+                  disabled={tipodata === -1}
+                />
+              </Col>
+
+              <Col lg={2}>
+                <Dropdown
+                  label="Filtro por Situação:"
+                  style={{ marginTop: '1px', width: '190px' }}
+                  options={situacoes}
+                  onChange={(e) => setSituacaoselec(e)}
+                />
+              </Col>
+            </Row>
+          </Col>
+          <Col style={{ marginTop: '30px' }}>
+            <Row style={{ textAlign: 'right' }}>
+              <Col>
+                <Button className="btn color-button-primary shadow-2  mb-3" onClick={(e) => Filtrar()}>
+                  <i className={'feather icon-filter'} /> Filtrar
+                </Button>
+              </Col>
+            </Row>
+          </Col>
+        </Row>
+        <Row style={{ padding: '10px' }}>
           <AGGrid
             width="100%"
-            height="540px"
+            height="450px"
             rows={rows}
             columns={columns}
             loading={loading}
             item={itemselec}
             setItem={setItemselec}
-            rowHeight={40}
             focus
+            totalizadores={totais}
+            counttotal={6}
+            rowHeight={40}
           />
         </Row>
       </Card>

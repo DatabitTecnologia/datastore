@@ -1,14 +1,18 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Card, Row } from 'react-bootstrap';
+import { Card, Row, Col, Button } from 'react-bootstrap';
 import Carousel from 'react-multi-carousel';
 import 'react-multi-carousel/lib/styles.css';
-
-import { apiList } from 'datareact/src/api/crudapi';
+import { Gift } from 'react-feather';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
+import { apiList, apiDropdown } from 'datareact/src/api/crudapi';
 import { Decode64 } from 'datareact/src/utils/crypto';
-
 import AGGrid from '../../../../components/AGGrid';
 import Pie from '../../../../components/Pie';
 import { LoadingOverlay } from '../../../../utils/databit/screenprocess';
+import Dropdown from '../../../../components/Dropdown';
+import { getDefaultStartDate, getDefaultEndDate } from '../../../../utils/databit/dateutils';
+import { totalizarLista } from '../../../../utils/databit/total';
 
 // === Utilitários externos ===
 
@@ -37,7 +41,7 @@ function agruparESomar(dados, campo) {
     if (!acc[chave]) acc[chave] = { qtde: 0, valor: 0 };
     acc[chave].qtde += 1;
     if (campo !== 'situacao') {
-      acc[chave].valor += item.vlrrestante;
+      acc[chave].valor += item.vlrbeneficio;
     } else {
       switch (item.possituacao) {
         case 1: {
@@ -96,20 +100,30 @@ const LoginBeneficio = () => {
   const [loading, setLoading] = useState(false);
   const [itemselec, setItemselec] = useState([]);
   const [itens, setItens] = useState([]);
+  const [startDate, setStartDate] = useState(getDefaultStartDate());
+  const [endDate, setEndDate] = useState(getDefaultEndDate());
+  const [totais, setTotais] = useState([]);
+  const [situacoes, setSituacoes] = useState([]);
+  const [tipos, setTipos] = useState([]);
+  const [tiposelec, setTiposelec] = useState('ALL');
+  const [situacaoselec, setSituacaoselec] = useState('ALL');
 
   const columns = useMemo(
     () => [
-      { headerClassName: 'header-list', field: 'codigo', headerName: 'Código', width: 90 },
-      { headerClassName: 'header-list', field: 'data', headerName: 'Data', width: 108, type: 'date' },
-      { headerClassName: 'header-list', field: 'situacao', headerName: 'Situação', width: 125 },
-      { headerClassName: 'header-list', field: 'tipo', headerName: 'Tipo', width: 125 },
-      { headerClassName: 'header-list', field: 'mes', headerName: 'Mês', width: 90 },
+      { headerClassName: 'header-list', field: 'codigo', headerName: 'Código', width: 86 },
+      { headerClassName: 'header-list', field: 'data', headerName: 'Data', width: 104, type: 'date' },
+      { headerClassName: 'header-list', field: 'situacao', headerName: 'Situação', width: 110 },
+      { headerClassName: 'header-list', field: 'tipo', headerName: 'Tipo', width: 110 },
+      { headerClassName: 'header-list', field: 'mes', headerName: 'Mês', width: 83 },
       { headerClassName: 'header-list', field: 'validade', headerName: 'Validade', width: 108, type: 'date' },
-      { headerClassName: 'header-list', field: 'vlrdisponibilizado', headerName: 'R$ Disponível', width: 103, type: 'number', decimal: 2 },
-      { headerClassName: 'header-list', field: 'vlrexpirado', headerName: 'R$ Expirado', width: 103, type: 'number', decimal: 2 },
-      { headerClassName: 'header-list', field: 'vlraguardando', headerName: 'R$ Aguardando', width: 103, type: 'number', decimal: 2 },
-      { headerClassName: 'header-list', field: 'vlrutilizado', headerName: 'R$ Utilizado', width: 103, type: 'number', decimal: 2 },
-      { headerClassName: 'header-list', field: 'vlrrestante', headerName: 'R$ Restante', width: 103, type: 'number', decimal: 2 }
+      { headerClassName: 'header-list', field: 'vlrbeneficio', headerName: 'Concedido', width: 95, type: 'number', decimal: 2 },
+      { headerClassName: 'header-list', field: 'vlrdisponibilizado', headerName: 'Disponível', width: 95, type: 'number', decimal: 2 },
+      { headerClassName: 'header-list', field: 'vlrexpirado', headerName: 'Expirado', width: 95, type: 'number', decimal: 2 },
+      { headerClassName: 'header-list', field: 'vlraguardando', headerName: 'Aguardando', width: 95, type: 'number', decimal: 2 },
+      { headerClassName: 'header-list', field: 'vlrutilizado', headerName: 'Utilizado', width: 95, type: 'number', decimal: 2 },
+      { headerClassName: 'header-list', field: 'vlrrestante', headerName: 'Restante', width: 95, type: 'number', decimal: 2 },
+      { headerClassName: 'header-list', field: 'origem', headerName: 'Origem', width: 90 },
+      { headerClassName: 'header-list', field: 'nomecli', headerName: 'Nome do Cliente', width: 300 }
     ],
     []
   );
@@ -125,14 +139,35 @@ const LoginBeneficio = () => {
 
   useEffect(() => {
     setLoading(true);
-    const codcli = Decode64(sessionStorage.getItem('client'));
-    apiList('RevendedorBeneficioVW', '*', '', `codcli = '${codcli}'`).then((response) => {
+    let tmpsituacoes = [];
+    tmpsituacoes.push({ value: 'ALL', label: 'Todas as Situações' });
+    apiDropdown('VW02337', 'possituacao', 'situacao', '').then((response) => {
       if (response.status === 200) {
-        setRows(response.data);
-        setLoading(false);
+        const listsituacoes = response.data;
+        listsituacoes.forEach((element) => {
+          tmpsituacoes.push(element);
+        });
+        setSituacoes(tmpsituacoes);
       }
     });
   }, []);
+
+  useEffect(() => {
+    let tmptipos = [];
+    tmptipos.push({ value: 'ALL', label: 'Todos os Tipos' });
+    if (situacoes.length > 0) {
+      apiDropdown('VW02337', 'classificacao', 'tipo', '').then((response) => {
+        if (response.status === 200) {
+          const listipos = response.data;
+          listipos.forEach((element) => {
+            tmptipos.push(element);
+          });
+          setTipos(tmptipos);
+          Filtrar();
+        }
+      });
+    }
+  }, [situacoes]);
 
   useEffect(() => {
     if (!rows.length) return;
@@ -143,8 +178,50 @@ const LoginBeneficio = () => {
       { title: 'Ranking por Mes', data: agruparESomar(rows, 'mes') }
     ];
 
+    const tmptotais = [
+      { data: totalizarLista(rows, 'vlrbeneficio', 'Total Concedido', 2), icon: <Gift></Gift>, color: '#00cc00' },
+      { data: totalizarLista(rows, 'vlrdisponibilizado', 'Total Disponível', 2), icon: <Gift></Gift>, color: '#0099ff' },
+      { data: totalizarLista(rows, 'vlrexpirado', 'Total Expirado', 2), icon: <Gift></Gift>, color: '#ff000d' },
+      { data: totalizarLista(rows, 'vlraguardando', 'Total Aguardando', 2), icon: <Gift></Gift>, color: '#cccc00' },
+      { data: totalizarLista(rows, 'vlrutilizado', 'Total Utilizado', 2), icon: <Gift></Gift>, color: '#130365' },
+      { data: totalizarLista(rows, 'vlrrestante', 'Total Restante', 2), icon: <Gift></Gift>, color: '#045008' }
+    ];
+
     setItens(tmpitens);
+    setTotais(tmptotais);
   }, [rows]);
+
+  const Filtrar = () => {
+    setLoading(true);
+    const codcli = Decode64(sessionStorage.getItem('client'));
+
+    let filter = " (codcli = '" + codcli + "' or codcli in (select tb01008_codigo from tb01008 where tb01008_grupo = VW02337.grupo)) ";
+
+    const tmdata1 = Date.parse(startDate);
+    const dt1 = new Date(tmdata1);
+    const data1 = dt1.toLocaleDateString('en-US');
+
+    const tmdata2 = Date.parse(endDate);
+    const dt2 = new Date(tmdata2);
+    const data2 = dt2.toLocaleDateString('en-US');
+
+    filter += " and data BETWEEN '" + data1 + " 00:00:00' AND '" + data2 + " 23:59:00' ";
+
+    if (situacaoselec !== 'ALL') {
+      filter += " and possituacao = '" + situacaoselec + "' ";
+    }
+
+    if (tiposelec !== 'ALL') {
+      filter += " and classificacao = '" + tiposelec + "' ";
+    }
+
+    apiList('RevendedorBeneficioVW', '*', '', filter).then((response) => {
+      if (response.status === 200) {
+        setRows(response.data);
+        setLoading(false);
+      }
+    });
+  };
 
   return (
     <div>
@@ -153,15 +230,72 @@ const LoginBeneficio = () => {
           <Card.Title as="h5">Meus Benefícios</Card.Title>
         </Card.Header>
         <Row style={{ padding: '10px' }}>
+          <Col lg={10}>
+            <Row>
+              <Col lg={2}>
+                <label className="form-label">Período de:</label>
+                <DatePicker
+                  selected={startDate}
+                  onChange={setStartDate}
+                  className="form-control"
+                  popperClassName="custom-datepicker-popper"
+                  placeholderText="DD/MM/AAAA"
+                  dateFormat="dd/MM/yyyy"
+                  locale="en"
+                />
+              </Col>
+              <Col lg={2}>
+                <label className="form-label">Até:</label>
+                <DatePicker
+                  selected={endDate}
+                  onChange={setEndDate}
+                  className="form-control"
+                  popperClassName="custom-datepicker-popper"
+                  placeholderText="DD/MM/AAAA"
+                  dateFormat="dd/MM/yyyy"
+                  locale="en"
+                />
+              </Col>
+              <Col lg={4}>
+                <Dropdown
+                  label="Filtro por Situação:"
+                  style={{ marginTop: '1px', width: '330px' }}
+                  options={situacoes}
+                  onChange={(e) => setSituacaoselec(e)}
+                />
+              </Col>
+              <Col lg={4}>
+                <Dropdown
+                  label="Filtro por Tipo:"
+                  style={{ marginTop: '1px', width: '330px' }}
+                  options={tipos}
+                  onChange={(e) => setTiposelec(e)}
+                />
+              </Col>
+            </Row>
+          </Col>
+          <Col style={{ marginTop: '30px' }}>
+            <Row style={{ textAlign: 'right' }}>
+              <Col>
+                <Button className="btn color-button-primary shadow-2  mb-3" onClick={(e) => Filtrar()}>
+                  <i className={'feather icon-filter'} /> Filtrar
+                </Button>
+              </Col>
+            </Row>
+          </Col>
+        </Row>
+        <Row style={{ padding: '10px' }}>
           <AGGrid
             width="100%"
-            height="540px"
+            height="450px"
             rows={rows}
             columns={columns}
             loading={loading}
             item={itemselec}
             setItem={setItemselec}
             focus
+            totalizadores={totais}
+            counttotal={6}
           />
         </Row>
       </Card>

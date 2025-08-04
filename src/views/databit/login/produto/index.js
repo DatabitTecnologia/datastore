@@ -111,7 +111,7 @@ const LoginProduto = () => {
   );
 
   useEffect(() => {
-    setLoading(false);
+    setLoading(true);
     let tmpmarcas = [];
     tmpmarcas.push({ value: 'ALL', label: 'Todas as Marcas' });
     apiDropdown('TB01047', 'TB01047_CODIGO', 'TB01047_NOME', '').then((response) => {

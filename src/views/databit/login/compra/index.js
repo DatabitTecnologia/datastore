@@ -219,7 +219,7 @@ const LoginCompra = () => {
         <Row style={{ padding: '10px' }}>
           <AGGrid
             width="100%"
-            height="540px"
+            height="450px"
             rows={rows}
             columns={columns}
             loading={loading}
