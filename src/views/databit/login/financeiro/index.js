@@ -13,9 +13,12 @@ import { LoadingOverlay } from '../../../../utils/databit/screenprocess';
 import pago from '../../../../assets/images/databit/pago.png';
 import vencido from '../../../../assets/images/databit/vencido.png';
 import vencer from '../../../../assets/images/databit/avencer.png';
+import boleto from '../../../../assets/images/databit/boleto.png';
+import link from '../../../../assets/images/databit/link.png';
 import Dropdown from '../../../../components/Dropdown';
 import { getDefaultStartDate, getDefaultEndDate } from '../../../../utils/databit/dateutils';
 import { totalizarLista } from '../../../../utils/databit/total';
+import { gerarBoleto } from 'datareact/src/api/boleto';
 
 // === Utilitários externos ===
 
@@ -44,12 +47,12 @@ function agruparESomar(dados, campo) {
     if (!acc[chave]) acc[chave] = { qtde: 0, valor: 0 };
     acc[chave].qtde += 1;
     if (campo !== 'situacao') {
-      acc[chave].valor += item.vlrtitulo;
+      acc[chave].valor += item.valor;
     } else {
       if (item.possituacao === 1) {
         acc[chave].valor += item.vlrpago;
       } else {
-        acc[chave].valor += item.vlrtitulo;
+        acc[chave].valor += item.valor;
       }
     }
     return acc;
@@ -98,14 +101,13 @@ const LoginFinanceiro = () => {
 
   const columns = useMemo(
     () => [
-      { headerClassName: 'header-list', field: 'titulo', headerName: 'Título', width: 100 },
-      { headerClassName: 'header-list', field: 'data', headerName: 'Data', width: 105, type: 'date' },
-      { headerClassName: 'header-list', field: 'mes', headerName: 'Mês', width: 85 },
-      { headerClassName: 'header-list', field: 'dtvenc', headerName: 'Venc.', width: 105, type: 'date' },
-      { headerClassName: 'header-list', field: 'vlrbruto', headerName: 'R$ Bruto', width: 100, type: 'number', decimal: 2 },
+      { headerClassName: 'header-list', field: 'documento', headerName: 'Título', width: 130 },
+      { headerClassName: 'header-list', field: 'datadoc', headerName: 'Data', width: 105, type: 'date' },
+      { headerClassName: 'header-list', field: 'vencimento', headerName: 'Venc.', width: 105, type: 'date' },
+      { headerClassName: 'header-list', field: 'vlrbruto', headerName: 'R$ Bruto', width: 106, type: 'number', decimal: 2 },
       { headerClassName: 'header-list', field: 'vlrdesconto', headerName: 'R$ Desc.', width: 80, type: 'number', decimal: 2 },
       { headerClassName: 'header-list', field: 'vlracres', headerName: 'R$ Acresc.', width: 80, type: 'number', decimal: 2 },
-      { headerClassName: 'header-list', field: 'vlrtitulo', headerName: 'R$ Título', width: 100, type: 'number', decimal: 2 },
+      { headerClassName: 'header-list', field: 'valor', headerName: 'R$ Título', width: 100, type: 'number', decimal: 2 },
       { headerClassName: 'header-list', field: 'vlrpago', headerName: 'R$ Pago', width: 100, type: 'number', decimal: 2 },
       { headerClassName: 'header-list', field: 'dtbaixa', headerName: 'Dt. Baixa', width: 105, type: 'date' },
       { headerClassName: 'header-list', field: 'situacao', headerName: 'Situação', width: 90 },
@@ -114,20 +116,127 @@ const LoginFinanceiro = () => {
         headerClassName: 'header-list',
         field: 'picture',
         headerName: '',
-        width: 52,
+        width: 48,
+        // Podemos remover a propriedade 'cellStyle' daqui, pois os estilos serão aplicados
+        // no container dentro do 'renderCell' para garantir que funcionem.
 
         renderCell: (params) => {
+          // Definimos o cursor e o hint (tooltip) com base na situação
+          let src, alt, title;
+
           switch (params.data.possituacao) {
             case 0: {
-              return <img src={vencer} alt={params.data.codigo} className="rounded-circle" width="35" height="35" />;
+              src = vencer;
+              alt = params.data.codigo;
+              title = 'À vencer';
+              break;
             }
             case 1: {
-              return <img src={pago} alt={params.data.codigo} className="rounded-circle" width="35" height="35" />;
+              src = pago;
+              alt = params.data.codigo;
+              title = 'Pago';
+              break;
             }
             case 2: {
-              return <img src={vencido} alt={params.data.codigo} className="rounded-circle" width="35" height="35" />;
+              src = vencido;
+              alt = params.data.codigo;
+              title = 'Vencido';
+              break;
+            }
+            default: {
+              return null;
             }
           }
+
+          // Retornamos um div com estilo flexbox para centralizar a imagem
+          // e aplicamos o cursor e o title diretamente na tag img
+          return (
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                height: '100%' // Garante que o div ocupe toda a altura da célula
+              }}
+            >
+              <img
+                src={src}
+                alt={alt}
+                title={title} // O hint é adicionado aqui!
+                className="rounded-circle"
+                width="30"
+                height="30"
+                style={{ cursor: 'pointer' }} // O cursor é adicionado aqui!
+              />
+            </div>
+          );
+        }
+      },
+      {
+        headerClassName: 'header-list',
+        field: 'picture',
+        headerName: '',
+        width: 48,
+        // Adicione a função do seu componente aqui
+        onVisualizarBoleto: (params) => this.onVisualizarBoleto(params),
+
+        renderCell: (params) => {
+          let src, title, url;
+          let actionType = null; // Nova variável para determinar a ação
+
+          if (params.data.linhadigitavel !== '' && params.data.linhadigitavel !== null) {
+            if (params.data.possituacao === 0) {
+              src = boleto;
+              title = 'Visualizar boleto';
+              actionType = 'boleto'; // Ação: chamar o método
+            } else if (params.data.possituacao === 2) {
+              if (params.data.possuilink === 0) {
+                src = boleto;
+                title = 'Visualizar boleto';
+                actionType = 'boleto'; // Ação: chamar o método
+              } else {
+                src = link;
+                title = 'Acessar link do banco para segunda via';
+                url = params.data.link;
+                actionType = 'link'; // Ação: abrir um link
+              }
+            } else {
+              return null;
+            }
+          } else {
+            return null;
+          }
+
+          // O manipulador de clique agora verifica qual ação executar
+          const handleCellClick = () => {
+            if (actionType === 'boleto') {
+              onVisualizarBoleto(params.data);
+            } else if (actionType === 'link' && url) {
+              window.open(url, '_blank');
+            }
+          };
+
+          return (
+            <div
+              role="button"
+              tabIndex="0"
+              style={{
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                height: '100%',
+                cursor: 'pointer'
+              }}
+              onClick={handleCellClick}
+              onKeyDown={(event) => {
+                if (event.key === 'Enter' || event.key === ' ') {
+                  handleCellClick();
+                }
+              }}
+            >
+              <img src={src} alt={params.data.codigo} title={title} className="rounded-circle" width="30" height="30" />
+            </div>
+          );
         }
       }
     ],
@@ -178,11 +287,11 @@ const LoginFinanceiro = () => {
 
     switch (parseInt(tipodata)) {
       case 0: {
-        filter += " and data BETWEEN '" + data1 + " 00:00:00' AND '" + data2 + " 23:59:00' ";
+        filter += " and datadoc BETWEEN '" + data1 + " 00:00:00' AND '" + data2 + " 23:59:00' ";
         break;
       }
       case 1: {
-        filter += " and dtvenc BETWEEN '" + data1 + " 00:00:00' AND '" + data2 + " 23:59:00' ";
+        filter += " and vencimento BETWEEN '" + data1 + " 00:00:00' AND '" + data2 + " 23:59:00' ";
         break;
       }
       case 2: {
@@ -198,7 +307,8 @@ const LoginFinanceiro = () => {
         filter += " and possituacao <> '1' ";
       }
     }
-    console.log(filter);
+    filter += ' order by vencimento';
+
     apiList('RevendedorFinanceiroVW', '*', '', filter).then((response) => {
       if (response.status === 200) {
         setRows(response.data);
@@ -220,7 +330,7 @@ const LoginFinanceiro = () => {
       { data: totalizarLista(rows, 'vlrbruto', 'Total Bruto', 2), icon: <DollarSign></DollarSign>, color: '#00cc00' },
       { data: totalizarLista(rows, 'vlrdesconto', 'Total Desconto', 2), icon: <DollarSign></DollarSign>, color: '#ff6600' },
       { data: totalizarLista(rows, 'vlracres', 'Total Acréscimo', 2), icon: <DollarSign></DollarSign>, color: '#bbff00' },
-      { data: totalizarLista(rows, 'vlrtitulo', 'Total Líquido', 2), icon: <DollarSign></DollarSign>, color: '#2500cc' },
+      { data: totalizarLista(rows, 'valor', 'Total Líquido', 2), icon: <DollarSign></DollarSign>, color: '#2500cc' },
       {
         data: totalizarLista(rows, 'vlrvencer', 'Total à Vencer', 2),
         icon: <DollarSign></DollarSign>,
@@ -237,6 +347,31 @@ const LoginFinanceiro = () => {
     setItens(tmpitens);
     setTotais(tmptotais);
   }, [rows]);
+
+  const onVisualizarBoleto = async (params) => {
+    const boletos = [];
+    boletos.push(tratarValoresNulos(params));
+    setLoading(true);
+    console.log(boletos);
+    const response = await gerarBoleto(boletos);
+    console.log(response);
+    setLoading(false);
+  };
+
+  function tratarValoresNulos(objeto) {
+    const objetoTratado = { ...objeto };
+
+    // Itera sobre cada chave (propriedade) do objeto
+    for (const chave in objetoTratado) {
+      // Verifica se o valor da chave é estritamente null
+      if (objetoTratado[chave] === null) {
+        // Se for null, substitui por uma string vazia
+        objetoTratado[chave] = '';
+      }
+    }
+
+    return objetoTratado;
+  }
 
   return (
     <div>
