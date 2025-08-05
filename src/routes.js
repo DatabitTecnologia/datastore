@@ -107,6 +107,12 @@ const routes = [
     element: lazy(() => import('./views/databit/login/financeiro'))
   },
   {
+    layout: AdminLayout,
+    exact: 'true',
+    path: '/logincredito',
+    element: lazy(() => import('./views/databit/login/credito'))
+  },
+  {
     exact: 'true',
     path: '/404',
     element: lazy(() => import('./views/errors/NotFound404'))

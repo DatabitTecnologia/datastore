@@ -11,6 +11,7 @@ import { ConfigContext } from '../../contexts/ConfigContext';
 import * as actionType from '../../store/actions';
 import Footer from '../../views/databit/footer';
 import { DATABIT } from '../../config/constant';
+import { Decode64 } from 'datareact/src/utils/crypto';
 
 const AdminLayout = ({ children }) => {
   const windowSize = useWindowSize();
@@ -69,7 +70,7 @@ const AdminLayout = ({ children }) => {
             maxWidth: '1300px',
             width: '100%',
             padding: '20px',
-            marginTop: DATABIT.islogged ? '214px' : '120px'
+            marginTop: DATABIT.islogged && parseInt(Decode64(sessionStorage.getItem('showpainel'))) === 1 ? '214px' : '120px'
           }}
         >
           <div className="">

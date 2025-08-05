@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { Card, Row, Col, Button } from 'react-bootstrap';
 import Carousel from 'react-multi-carousel';
 import 'react-multi-carousel/lib/styles.css';
-import { Gift } from 'react-feather';
+import { CreditCard } from 'react-feather';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { apiList, apiDropdown } from 'datareact/src/api/crudapi';
@@ -40,29 +40,7 @@ function agruparESomar(dados, campo) {
     const chave = item[campo];
     if (!acc[chave]) acc[chave] = { qtde: 0, valor: 0 };
     acc[chave].qtde += 1;
-    if (campo !== 'situacao') {
-      acc[chave].valor += item.vlrbeneficio;
-    } else {
-      switch (item.possituacao) {
-        case 1: {
-          acc[chave].valor += item.vlrrestante;
-          break;
-        }
-        case 2: {
-          acc[chave].valor += item.vlrutilizado;
-          break;
-        }
-        case 3: {
-          acc[chave].valor += item.vlrexpirado;
-          break;
-        }
-        case 4: {
-          acc[chave].valor += item.vlraguardando;
-          break;
-        }
-      }
-    }
-
+    acc[chave].valor += item.valor;
     return acc;
   }, {});
   return Object.entries(agrupado)
@@ -95,7 +73,7 @@ const Item = ({ title, data, loading, columns2 }) => (
 
 // === Componente principal ===
 
-const LoginBeneficio = () => {
+const LoginCredito = () => {
   const [rows, setRows] = useState([]);
   const [loading, setLoading] = useState(false);
   const [itemselec, setItemselec] = useState([]);
@@ -103,27 +81,22 @@ const LoginBeneficio = () => {
   const [startDate, setStartDate] = useState(getDefaultStartDate());
   const [endDate, setEndDate] = useState(getDefaultEndDate());
   const [totais, setTotais] = useState([]);
-  const [situacoes, setSituacoes] = useState([]);
+  const [status, setStatus] = useState([]);
   const [tipos, setTipos] = useState([]);
+  const [grupos, setGrupos] = useState([]);
   const [tiposelec, setTiposelec] = useState('ALL');
-  const [situacaoselec, setSituacaoselec] = useState('ALL');
+  const [statusselec, setStatusselec] = useState('ALL');
+  const [gruposelec, setGruposelec] = useState('ALL');
 
   const columns = useMemo(
     () => [
-      { headerClassName: 'header-list', field: 'codigo', headerName: 'Código', width: 86 },
+      { headerClassName: 'header-list', field: 'codigo', headerName: 'Código', width: 120 },
       { headerClassName: 'header-list', field: 'data', headerName: 'Data', width: 104, type: 'date' },
-      { headerClassName: 'header-list', field: 'situacao', headerName: 'Situação', width: 110 },
-      { headerClassName: 'header-list', field: 'tipo', headerName: 'Tipo', width: 110 },
-      { headerClassName: 'header-list', field: 'mes', headerName: 'Mês', width: 83 },
-      { headerClassName: 'header-list', field: 'validade', headerName: 'Validade', width: 108, type: 'date' },
-      { headerClassName: 'header-list', field: 'vlrbeneficio', headerName: 'Concedido', width: 95, type: 'number', decimal: 2 },
-      { headerClassName: 'header-list', field: 'vlrdisponibilizado', headerName: 'Disponível', width: 95, type: 'number', decimal: 2 },
-      { headerClassName: 'header-list', field: 'vlrexpirado', headerName: 'Expirado', width: 95, type: 'number', decimal: 2 },
-      { headerClassName: 'header-list', field: 'vlraguardando', headerName: 'Aguardando', width: 95, type: 'number', decimal: 2 },
-      { headerClassName: 'header-list', field: 'vlrutilizado', headerName: 'Utilizado', width: 95, type: 'number', decimal: 2 },
-      { headerClassName: 'header-list', field: 'vlrrestante', headerName: 'Restante', width: 95, type: 'number', decimal: 2 },
-      { headerClassName: 'header-list', field: 'origem', headerName: 'Origem', width: 90 },
-      { headerClassName: 'header-list', field: 'nomecli', headerName: 'Nome do Cliente', width: 300 }
+      { headerClassName: 'header-list', field: 'nome', headerName: 'Histórico', width: 360 },
+      { headerClassName: 'header-list', field: 'status', headerName: 'Status', width: 160 },
+      { headerClassName: 'header-list', field: 'tipo', headerName: 'Tipo', width: 160 },
+      { headerClassName: 'header-list', field: 'grupo', headerName: 'Grupo Econômico', width: 160 },
+      { headerClassName: 'header-list', field: 'valor', headerName: 'R$ Crédito', width: 95, type: 'number', decimal: 2 }
     ],
     []
   );
@@ -139,15 +112,15 @@ const LoginBeneficio = () => {
 
   useEffect(() => {
     setLoading(true);
-    let tmpsituacoes = [];
-    tmpsituacoes.push({ value: 'ALL', label: 'Todas as Situações' });
-    apiDropdown('VW02337', 'possituacao', 'situacao', '').then((response) => {
+    let tmpstatus = [];
+    tmpstatus.push({ value: 'ALL', label: 'Todas os Status' });
+    apiDropdown('VW04059', 'posstatus', 'status', '').then((response) => {
       if (response.status === 200) {
-        const listsituacoes = response.data;
-        listsituacoes.forEach((element) => {
-          tmpsituacoes.push(element);
+        const liststatus = response.data;
+        liststatus.forEach((element) => {
+          tmpstatus.push(element);
         });
-        setSituacoes(tmpsituacoes);
+        setStatus(tmpstatus);
       }
     });
   }, []);
@@ -155,36 +128,55 @@ const LoginBeneficio = () => {
   useEffect(() => {
     let tmptipos = [];
     tmptipos.push({ value: 'ALL', label: 'Todos os Tipos' });
-    if (situacoes.length > 0) {
-      apiDropdown('VW02337', 'classificacao', 'tipo', '').then((response) => {
+    if (status.length > 0) {
+      apiDropdown('VW04059', 'postipo', 'tipo', '').then((response) => {
         if (response.status === 200) {
           const listipos = response.data;
           listipos.forEach((element) => {
             tmptipos.push(element);
           });
           setTipos(tmptipos);
-          Filtrar();
         }
       });
     }
-  }, [situacoes]);
+  }, [status]);
+
+  useEffect(() => {
+    const codcli = Decode64(sessionStorage.getItem('client'));
+    let tmpgrupos = [];
+    tmpgrupos.push({ value: 'ALL', label: 'Todos os Grupos' });
+    if (tipos.length > 0) {
+      apiDropdown('VW04059', 'codgrupo', 'grupo', "codcli = '" + codcli + "'").then((response) => {
+        if (response.status === 200) {
+          const listgrupos = response.data;
+          listgrupos.forEach((element) => {
+            tmpgrupos.push(element);
+          });
+          setGrupos(tmpgrupos);
+        }
+      });
+    }
+  }, [tipos]);
+
+  useEffect(() => {
+    if (grupos.length > 0) {
+      Filtrar();
+    }
+  }, [grupos]);
 
   useEffect(() => {
     if (!rows.length) return;
 
     const tmpitens = [
-      { title: 'Ranking por Situação', data: agruparESomar(rows, 'situacao') },
+      { title: 'Ranking por Status', data: agruparESomar(rows, 'status') },
       { title: 'Ranking por Tipo', data: agruparESomar(rows, 'tipo') },
-      { title: 'Ranking por Mes', data: agruparESomar(rows, 'mes') }
+      { title: 'Ranking por Grupo Econômico', data: agruparESomar(rows, 'grupo') }
     ];
 
     const tmptotais = [
-      { data: totalizarLista(rows, 'vlrbeneficio', 'Total Concedido', 2), icon: <Gift></Gift>, color: '#00cc00' },
-      { data: totalizarLista(rows, 'vlrdisponibilizado', 'Total Disponível', 2), icon: <Gift></Gift>, color: '#0099ff' },
-      { data: totalizarLista(rows, 'vlrexpirado', 'Total Expirado', 2), icon: <Gift></Gift>, color: '#ff000d' },
-      { data: totalizarLista(rows, 'vlraguardando', 'Total Aguardando', 2), icon: <Gift></Gift>, color: '#cccc00' },
-      { data: totalizarLista(rows, 'vlrutilizado', 'Total Utilizado', 2), icon: <Gift></Gift>, color: '#130365' },
-      { data: totalizarLista(rows, 'vlrrestante', 'Total Restante', 2), icon: <Gift></Gift>, color: '#045008' }
+      { data: totalizarLista(rows, 'valor', 'Total de Créditos', 2), icon: <CreditCard></CreditCard>, color: '#00cc00' },
+      { data: totalizarLista(rows, 'valorbaixado', 'Total Utilizado', 2), icon: <CreditCard></CreditCard>, color: '#0099ff' },
+      { data: totalizarLista(rows, 'valoraberto', 'Total Disponível', 2), icon: <CreditCard></CreditCard>, color: '#cccc00' }
     ];
 
     setItens(tmpitens);
@@ -198,7 +190,7 @@ const LoginBeneficio = () => {
     let filter =
       " (codcli = '" +
       codcli +
-      "' or codcli in (select tb01008_codigo from tb01008 where tb01008_grupo = VW02337.grupo and TB01008_GRUPO <> '0000')) ";
+      "' or codcli in (select tb01008_codigo from tb01008 where tb01008_grupo = VW04059.grupo and TB01008_GRUPO <> '0000')) ";
 
     const tmdata1 = Date.parse(startDate);
     const dt1 = new Date(tmdata1);
@@ -210,16 +202,21 @@ const LoginBeneficio = () => {
 
     filter += " and data BETWEEN '" + data1 + " 00:00:00' AND '" + data2 + " 23:59:00' ";
 
-    if (situacaoselec !== 'ALL') {
-      filter += " and possituacao = '" + situacaoselec + "' ";
+    if (statusselec !== 'ALL') {
+      filter += " and posstatus = '" + statusselec + "' ";
     }
 
     if (tiposelec !== 'ALL') {
-      filter += " and classificacao = '" + tiposelec + "' ";
+      filter += " and postipo = '" + tiposelec + "' ";
     }
 
-    apiList('RevendedorBeneficioVW', '*', '', filter).then((response) => {
+    if (gruposelec !== 'ALL') {
+      filter += " and grupo = '" + gruposelec + "' ";
+    }
+    console.log(filter);
+    apiList('RevendedorCreditoVW', '*', '', filter).then((response) => {
       if (response.status === 200) {
+        console.log(response.data);
         setRows(response.data);
         setLoading(false);
       }
@@ -230,7 +227,7 @@ const LoginBeneficio = () => {
     <div>
       <Card style={{ borderRadius: '12px' }}>
         <Card.Header>
-          <Card.Title as="h5">Meus Benefícios</Card.Title>
+          <Card.Title as="h5">Meus Créditos Disponíveis</Card.Title>
         </Card.Header>
         <Row style={{ padding: '10px' }}>
           <Col lg={10}>
@@ -259,20 +256,28 @@ const LoginBeneficio = () => {
                   locale="en"
                 />
               </Col>
-              <Col lg={4}>
+              <Col lg={2}>
                 <Dropdown
-                  label="Filtro por Situação:"
-                  style={{ marginTop: '1px', width: '330px' }}
-                  options={situacoes}
-                  onChange={(e) => setSituacaoselec(e)}
+                  label="Filtro por Status:"
+                  style={{ marginTop: '1px', width: '160px' }}
+                  options={status}
+                  onChange={(e) => setStatusselec(e)}
                 />
               </Col>
-              <Col lg={4}>
+              <Col lg={2}>
                 <Dropdown
                   label="Filtro por Tipo:"
-                  style={{ marginTop: '1px', width: '330px' }}
+                  style={{ marginTop: '1px', width: '160px' }}
                   options={tipos}
                   onChange={(e) => setTiposelec(e)}
+                />
+              </Col>
+              <Col lg={3}>
+                <Dropdown
+                  label="Filtro por Grupo:"
+                  style={{ marginTop: '1px', width: '280px' }}
+                  options={grupos}
+                  onChange={(e) => setGruposelec(e)}
                 />
               </Col>
             </Row>
@@ -298,7 +303,7 @@ const LoginBeneficio = () => {
             setItem={setItemselec}
             focus
             totalizadores={totais}
-            counttotal={6}
+            counttotal={3}
           />
         </Row>
       </Card>
@@ -325,4 +330,4 @@ const LoginBeneficio = () => {
   );
 };
 
-export default LoginBeneficio;
+export default LoginCredito;

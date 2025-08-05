@@ -120,7 +120,11 @@ const Navigation = () => {
         ) : (
           <NavContent navigation={menu.items || []} navigationright={[]} />
         )}
-        {DATABIT.islogged && <PainelFinanceiro codcli={Decode64(sessionStorage.getItem('client'))}></PainelFinanceiro>}
+        {DATABIT.islogged && parseInt(Decode64(sessionStorage.getItem('showpainel'))) === 1 ? (
+          <PainelFinanceiro codcli={Decode64(sessionStorage.getItem('client'))}></PainelFinanceiro>
+        ) : (
+          <></>
+        )}
       </div>
     </div>
   );

@@ -55,20 +55,40 @@ const PainelFinanceiro = (props) => {
     mobile: { breakpoint: { max: 464, min: 0 }, items: 2 }
   };
 
-  const itens = [
-    { title: 'Benefícios Disponíveis', icon: <Gift />, value: moeda(beneficios), color: '#0099ff' },
-    { title: 'Limite de Crédito', icon: <Gift />, value: moeda(limitecredito), color: '#cccc00' },
-    { title: 'Crédito Disponível', icon: <Gift />, value: moeda(creditodisponivel), color: '#00cc00' },
-    { title: 'Total de Compras', icon: <ShoppingCart />, value: moeda(totalcompras), color: '#0099ff' },
-    { title: 'Média de Compras', icon: <ShoppingCart />, value: moeda(mediacompras), color: '#cccc00' },
-    { title: 'Compras no Mês', icon: <ShoppingCart />, value: moeda(comprasmes), color: '#00cc00' },
-    { title: 'Valor Pago', icon: <DollarSign />, value: moeda(valorpago), color: '#0099ff' },
-    { title: 'Valor Vencido', icon: <DollarSign />, value: moeda(valorvencido), color: '#ff3300' },
-    { title: 'Valor à Vencer', icon: <DollarSign />, value: moeda(valorvencer), color: '#00cc00' },
-    { title: 'Docs. pagos em dia', icon: <CheckCircle />, value: pagosdia, color: '#0099ff' },
-    { title: 'Docs. pagos em atraso', icon: <XCircle />, value: pagosatraso, color: '#ff3300' },
-    { title: 'Máx. dias em atraso', icon: <Calendar />, value: `${diasatraso} dias`, color: '#ff3300' }
-  ];
+  const itens = [];
+  if (parseInt(Decode64(sessionStorage.getItem('showbeneficio'))) === 1) {
+    itens.push({ title: 'Benefícios Disponíveis', icon: <Gift />, value: moeda(beneficios), color: '#0099ff' });
+  }
+  if (parseInt(Decode64(sessionStorage.getItem('showcredito'))) === 1) {
+    itens.push({ title: 'Crédito Disponível', icon: <Gift />, value: moeda(creditodisponivel), color: '#00cc00' });
+  }
+  if (parseInt(Decode64(sessionStorage.getItem('showcompratotal'))) === 1) {
+    itens.push({ title: 'Total de Compras', icon: <ShoppingCart />, value: moeda(totalcompras), color: '#0099ff' });
+  }
+  if (parseInt(Decode64(sessionStorage.getItem('showcompramedia'))) === 1) {
+    itens.push({ title: 'Média de Compras', icon: <ShoppingCart />, value: moeda(mediacompras), color: '#cccc00' });
+  }
+  if (parseInt(Decode64(sessionStorage.getItem('showcomprames'))) === 1) {
+    itens.push({ title: 'Compras no Mês', icon: <ShoppingCart />, value: moeda(comprasmes), color: '#00cc00' });
+  }
+  if (parseInt(Decode64(sessionStorage.getItem('showpago'))) === 1) {
+    itens.push({ title: 'Valor Pago', icon: <DollarSign />, value: moeda(valorpago), color: '#0099ff' });
+  }
+  if (parseInt(Decode64(sessionStorage.getItem('showvencido'))) === 1) {
+    itens.push({ title: 'Valor Vencido', icon: <DollarSign />, value: moeda(valorvencido), color: '#ff3300' });
+  }
+  if (parseInt(Decode64(sessionStorage.getItem('showvencer'))) === 1) {
+    itens.push({ title: 'Valor à Vencer', icon: <DollarSign />, value: moeda(valorvencer), color: '#00cc00' });
+  }
+  if (parseInt(Decode64(sessionStorage.getItem('showdocsdia'))) === 1) {
+    itens.push({ title: 'Docs. pagos em dia', icon: <CheckCircle />, value: pagosdia, color: '#0099ff' });
+  }
+  if (parseInt(Decode64(sessionStorage.getItem('showdocsatraso'))) === 1) {
+    itens.push({ title: 'Docs. pagos em atraso', icon: <XCircle />, value: pagosatraso, color: '#ff3300' });
+  }
+  if (parseInt(Decode64(sessionStorage.getItem('showmaxdias'))) === 1) {
+    itens.push({ title: 'Máx. dias em atraso', icon: <Calendar />, value: `${diasatraso} dias`, color: '#ff3300' });
+  }
 
   return (
     <div
@@ -79,7 +99,15 @@ const PainelFinanceiro = (props) => {
         backgroundColor: '#f5f5f5'
       }}
     >
-      <Carousel responsive={responsive} infinite autoPlay autoPlaySpeed={3000} keyBoardControl arrows={false} showDots={false}>
+      <Carousel
+        responsive={responsive}
+        infinite={parseInt(Decode64(sessionStorage.getItem('carrouselfin'))) === 1}
+        autoPlay={parseInt(Decode64(sessionStorage.getItem('carrouselfin'))) === 1}
+        autoPlaySpeed={3000}
+        keyBoardControl
+        arrows={false}
+        showDots={false}
+      >
         {itens.map((item, index) => (
           <Item key={index} {...item} />
         ))}

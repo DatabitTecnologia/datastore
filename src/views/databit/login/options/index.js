@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { Decode64 } from 'datareact/src/utils/crypto';
 import user from '../../../../assets/images/databit/user.png';
 
-import { User, ShoppingCart, Package, Gift, BarChart2, LogOut } from 'react-feather';
+import { User, ShoppingCart, Package, Gift, BarChart2, LogOut, CreditCard } from 'react-feather';
 
 const logoffOption = (navigate) => ({
   icon: <LogOut size={18} />,
@@ -51,6 +51,7 @@ const LoginOptions = ({ openDropdownFn, closeDropdown }) => {
     { icon: <Package size={18} />, label: 'Meus Produtos Comprados', link: '/loginproduto' },
     { icon: <Gift size={18} />, label: 'Meus Benefícios', link: '/loginbeneficio' },
     { icon: <BarChart2 size={18} />, label: 'Minha Posição Financeira', link: '/loginfinanceiro' },
+    { icon: <CreditCard size={18} />, label: 'Meus Créditos Disponíveis', link: '/logincredito' },
     logoffOption(navigate)
   ];
 
