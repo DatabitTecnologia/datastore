@@ -194,11 +194,14 @@ const LoginBeneficio = () => {
   const Filtrar = () => {
     setLoading(true);
     const codcli = Decode64(sessionStorage.getItem('client'));
+    const grupo = Decode64(sessionStorage.getItem('group'));
 
     let filter =
       " (codcli = '" +
       codcli +
-      "' or codcli in (select tb01008_codigo from tb01008 where tb01008_grupo = VW02337.grupo and TB01008_GRUPO <> '0000')) ";
+      "' or codcli in (select tb01008_codigo from tb01008 where tb01008_grupo = '" +
+      grupo +
+      "' and TB01008_GRUPO <> '0000')) ";
 
     const tmdata1 = Date.parse(startDate);
     const dt1 = new Date(tmdata1);

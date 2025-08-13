@@ -1,7 +1,16 @@
-import { useState } from 'react';
-import { Minus, Plus } from 'lucide-react'; // ou use outros ícones se quiser
+import { Minus, Plus } from 'lucide-react';
 
-export const SelectorNumber = ({ value, setValue, min = 1, max = 999 }) => {
+export const SelectorNumber = ({
+  value,
+  setValue,
+  min = 1,
+  max = 999,
+  fontSize = '1.2rem',
+  color = '#333',
+  borderColor = '#ccc',
+  bgColor = '#fff',
+  height = '40px'
+}) => {
   const handleDecrease = () => {
     if (value > min) setValue(value - 1);
   };
@@ -11,18 +20,18 @@ export const SelectorNumber = ({ value, setValue, min = 1, max = 999 }) => {
   };
 
   const handleInputChange = (e) => {
-    const val = parseInt(e.target.value, 10);
-    if (!isNaN(val)) {
-      if (val >= min && val <= max) {
-        setValue(val);
-      } else if (val < min) {
-        setValue(min);
-      } else if (val > max) {
-        setValue(max);
-      }
-    } else {
-      setValue(min); // valor inválido ou apagado → volta pro mínimo
+    const val = e.target.value;
+    if (val === '') {
+      setValue(''); // permite digitar temporariamente
+      return;
     }
+    const num = parseInt(val, 10);
+    if (!isNaN(num)) setValue(num);
+  };
+
+  const handleBlur = () => {
+    if (value === '' || value < min) setValue(min);
+    if (value > max) setValue(max);
   };
 
   return (
@@ -31,12 +40,13 @@ export const SelectorNumber = ({ value, setValue, min = 1, max = 999 }) => {
         display: 'flex',
         alignItems: 'center',
         gap: '8px',
-        border: '1px solid #ccc',
+        border: `1px solid ${borderColor}`,
         borderRadius: '8px',
         padding: '4px 10px',
         width: 'fit-content',
-        background: '#fff',
-        textAlign: 'center'
+        background: bgColor,
+        textAlign: 'center',
+        height: height
       }}
     >
       <button
@@ -47,7 +57,8 @@ export const SelectorNumber = ({ value, setValue, min = 1, max = 999 }) => {
           border: 'none',
           cursor: value <= min ? 'not-allowed' : 'pointer',
           padding: '4px',
-          color: '#333'
+          color,
+          transition: '0.2s'
         }}
       >
         <Minus size={18} />
@@ -57,14 +68,16 @@ export const SelectorNumber = ({ value, setValue, min = 1, max = 999 }) => {
         type="number"
         value={value}
         onChange={handleInputChange}
+        onBlur={handleBlur}
         min={min}
         max={max}
         style={{
           width: '50px',
           textAlign: 'center',
-          fontSize: '1.2rem',
+          fontSize: fontSize,
           border: 'none',
-          outline: 'none'
+          outline: 'none',
+          background: 'transparent'
         }}
       />
 
@@ -76,7 +89,8 @@ export const SelectorNumber = ({ value, setValue, min = 1, max = 999 }) => {
           border: 'none',
           cursor: value >= max ? 'not-allowed' : 'pointer',
           padding: '4px',
-          color: '#333'
+          color,
+          transition: '0.2s'
         }}
       >
         <Plus size={18} />

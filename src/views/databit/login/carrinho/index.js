@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import carrinho from '../../../../assets/images/databit/carrinho.png';
 import { StarRatingView } from '../../../../components/StarRatingView';
 import { capitalizeText } from 'datareact/src/utils/capitalize';
-import { Check, Trash2, MinusCircle } from 'react-feather';
+import { Trash2, MinusCircle, ShoppingCart } from 'react-feather';
 import { apiExec } from 'datareact/src/api/crudapi';
 import { LoadingOverlay } from '../../../../utils/databit/screenprocess';
 import { Decode64 } from 'datareact/src/utils/crypto';
@@ -35,6 +35,10 @@ const LoginCarrinho = ({ openDropdownFn, closeDropdown, listCarrinho }) => {
       window.dispatchEvent(new Event('carrinhoAtualizado'));
       setLoading(false);
     }
+  };
+
+  const handleCheckCart = () => {
+    navigate('/carrinho');
   };
 
   const renderActionButton = ({ icon, label, onClick }) => (
@@ -74,7 +78,7 @@ const LoginCarrinho = ({ openDropdownFn, closeDropdown, listCarrinho }) => {
     if (listCarrinho.length >= 3) return '620px';
     if (listCarrinho.length === 2) return '440px';
     if (listCarrinho.length === 1) return '230px';
-    return '150px';
+    return '70px';
   };
 
   return (
@@ -138,7 +142,7 @@ const LoginCarrinho = ({ openDropdownFn, closeDropdown, listCarrinho }) => {
               <div style={{ paddingRight: '15px', paddingBottom: '10px' }}>
                 {listCarrinho.length === 0 ? (
                   <span className="label-destaque-16" style={{ padding: '10px', display: 'block', textAlign: 'center' }}>
-                    Seu Carrinho de Compra está vazio.
+                    Seu carrinho de compra está vazio.
                   </span>
                 ) : (
                   listCarrinho.map((item) => (
@@ -169,7 +173,7 @@ const LoginCarrinho = ({ openDropdownFn, closeDropdown, listCarrinho }) => {
                         </Col>
 
                         <Col lg={7}>
-                          <span className="label-destaque-16">{capitalizeText(item.nome.substring(0, 60))}</span>
+                          <span className="label-destaque-16">{capitalizeText(item.nome)}</span>
 
                           <StarRatingView rating={item.avaliacao ?? 0} size={20} showrating={true} />
 
@@ -229,8 +233,9 @@ const LoginCarrinho = ({ openDropdownFn, closeDropdown, listCarrinho }) => {
                 onClick: handleClearCart
               })}
               {renderActionButton({
-                icon: <Check size={18} />,
-                label: 'Finalizar Carrinho'
+                icon: <ShoppingCart size={18} />,
+                label: 'Ir para o Carrinho',
+                onClick: handleCheckCart
               })}
             </div>
           )}

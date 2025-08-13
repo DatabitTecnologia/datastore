@@ -2,21 +2,36 @@ import React, { useState } from 'react';
 import { Row, Col } from 'react-bootstrap';
 import PerfectScrollbar from 'react-perfect-scrollbar';
 import { useNavigate } from 'react-router-dom';
+import { useToasts } from 'react-toast-notifications';
 import favorito from '../../../../assets/images/databit/favorito.png';
 import { StarRatingView } from '../../../../components/StarRatingView';
 import { capitalizeText } from 'datareact/src/utils/capitalize';
-import { ShoppingCart, Trash2, MinusCircle } from 'react-feather';
+import { ShoppingCart, Trash2, MinusCircle, Check, X } from 'react-feather';
 import { apiExec } from 'datareact/src/api/crudapi';
 import { LoadingOverlay } from '../../../../utils/databit/screenprocess';
 import { Decode64 } from 'datareact/src/utils/crypto';
 import semfoto from '../../../../assets/images/databit/semfoto.png';
+import { SelectorNumber } from '../../../../components/SelectorNumber';
+import { adicionarCarrinho } from '../../../../utils/databit/carrinho';
 
 const LoginFavorito = ({ openDropdownFn, closeDropdown, listFavoritos }) => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+  const [qtde, setQtde] = useState(1);
+  const [confirm, setConfirm] = useState(false);
+  const { addToast } = useToasts();
 
-  const handleAddToCart = (item) => {
-    console.log('Adicionar ao carrinho:', item.codigo);
+  const handleAddToCart = async (item) => {
+    setLoading(true);
+    await adicionarCarrinho(item, qtde);
+    window.dispatchEvent(new Event('carrinhoAtualizado'));
+    addToast('Item adicionado com SUCESSO !', {
+      placement: 'bottom-rigth',
+      appearance: 'success',
+      autoDismiss: true
+    });
+    setLoading(false);
+    setConfirm(false);
   };
 
   const handleRemoveFavorite = async (item) => {
@@ -77,7 +92,7 @@ const LoginFavorito = ({ openDropdownFn, closeDropdown, listFavoritos }) => {
     if (listFavoritos.length >= 3) return '620px';
     if (listFavoritos.length === 2) return '440px';
     if (listFavoritos.length === 1) return '230px';
-    return '150px';
+    return '70px';
   };
 
   return (
@@ -172,7 +187,7 @@ const LoginFavorito = ({ openDropdownFn, closeDropdown, listFavoritos }) => {
                         </Col>
 
                         <Col lg={7}>
-                          <span className="label-destaque-16">{capitalizeText(item.nome.substring(0, 60))}</span>
+                          <span className="label-destaque-16">{capitalizeText(item.nome)}</span>
                           <StarRatingView rating={item.avaliacao ?? 0} size={20} showrating={true} />
                         </Col>
 
@@ -200,16 +215,39 @@ const LoginFavorito = ({ openDropdownFn, closeDropdown, listFavoritos }) => {
                           marginTop: '5px'
                         }}
                       >
-                        {renderActionButton({
-                          icon: <ShoppingCart size={18} />,
-                          label: 'Adicionar ao Carrinho',
-                          onClick: () => handleAddToCart(item)
-                        })}
-                        {renderActionButton({
-                          icon: <Trash2 size={18} />,
-                          label: 'Remover dos Favoritos',
-                          onClick: () => handleRemoveFavorite(item)
-                        })}
+                        {confirm ? (
+                          <>
+                            <div>
+                              <SelectorNumber fontSize="15px" value={qtde} setValue={setQtde} />
+                            </div>
+
+                            {renderActionButton({
+                              icon: <Check size={18} />,
+                              label: 'Confirmar',
+                              onClick: () => handleAddToCart(item)
+                            })}
+
+                            {renderActionButton({
+                              icon: <X size={18} />,
+                              label: 'Cancelar',
+                              onClick: () => setConfirm(false)
+                            })}
+                          </>
+                        ) : (
+                          <>
+                            {renderActionButton({
+                              icon: <ShoppingCart size={18} />,
+                              label: 'Adicionar ao Carrinho',
+                              onClick: () => setConfirm(true)
+                            })}
+
+                            {renderActionButton({
+                              icon: <Trash2 size={18} />,
+                              label: 'Remover dos Favoritos',
+                              onClick: () => handleRemoveFavorite(item)
+                            })}
+                          </>
+                        )}
                       </div>
                     </div>
                   ))

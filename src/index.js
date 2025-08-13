@@ -100,6 +100,7 @@ const configUrl = `${process.env.PUBLIC_URL}/config.json`;
     sessionStorage.setItem('showmaxdias', Encode64(data.showMaxdias.toString()));
     sessionStorage.setItem('carrouselfin', Encode64(data.carrouselFin.toString()));
     sessionStorage.setItem('showpainel', Encode64(data.showPainel.toString()));
+    sessionStorage.setItem('statusven', Encode64(data.statusven.toString()));
 
     document.title = data.title;
     DATABIT.islogged = false;
@@ -108,7 +109,7 @@ const configUrl = `${process.env.PUBLIC_URL}/config.json`;
       const codcli = Decode64(localStorage.getItem('client'));
       const responsecli = await apiFind(
         'Cliente',
-        'TB01008_NOME,TB01008_CONCEITO,TB01008_CONDPAG,TB01008_TIPDESC,TB01008_INSCEST,TB01008_NAOCONTRIBUINTE,TB01008_VENDEDOR',
+        'TB01008_NOME,TB01008_CONCEITO,TB01008_CONDPAG,TB01008_TIPDESC,TB01008_INSCEST,TB01008_NAOCONTRIBUINTE,TB01008_VENDEDOR,TB01008_GRUPO',
         '',
         "TB01008_CODIGO = '" + codcli + "' "
       );
@@ -124,6 +125,13 @@ const configUrl = `${process.env.PUBLIC_URL}/config.json`;
       sessionStorage.setItem('consumption', Encode64(naocontribuinte ? 'S' : 'N'));
       if (cliente.conceito) sessionStorage.setItem('tableprice', Encode64(cliente.conceito));
       if (cliente.vendedor) sessionStorage.setItem('seller', Encode64(cliente.vendedor));
+      if (cliente.grupo) sessionStorage.setItem('group', Encode64(cliente.grupo));
+      const responsecab = await apiFind('Carrinho', 'TB02310_CODIGO', '', "TB02310_CODCLI = '" + codcli + "'");
+      if (responsecab.status === 200) {
+        if (responsecab.data) {
+          sessionStorage.setItem('store', Encode64(responsecab.data.codigo));
+        }
+      }
 
       DATABIT.islogged = true;
     }

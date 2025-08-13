@@ -60,7 +60,7 @@ const PainelFinanceiro = (props) => {
     itens.push({ title: 'Benefícios Disponíveis', icon: <Gift />, value: moeda(beneficios), color: '#0099ff' });
   }
   if (parseInt(Decode64(sessionStorage.getItem('showcredito'))) === 1) {
-    itens.push({ title: 'Crédito Disponível', icon: <Gift />, value: moeda(creditodisponivel), color: '#00cc00' });
+    itens.push({ title: 'Créditos Disponíveis', icon: <Gift />, value: moeda(creditodisponivel), color: '#00cc00' });
   }
   if (parseInt(Decode64(sessionStorage.getItem('showcompratotal'))) === 1) {
     itens.push({ title: 'Total de Compras', icon: <ShoppingCart />, value: moeda(totalcompras), color: '#0099ff' });
@@ -72,13 +72,13 @@ const PainelFinanceiro = (props) => {
     itens.push({ title: 'Compras no Mês', icon: <ShoppingCart />, value: moeda(comprasmes), color: '#00cc00' });
   }
   if (parseInt(Decode64(sessionStorage.getItem('showpago'))) === 1) {
-    itens.push({ title: 'Valor Pago', icon: <DollarSign />, value: moeda(valorpago), color: '#0099ff' });
+    itens.push({ title: 'Títulos Pagos', icon: <DollarSign />, value: moeda(valorpago), color: '#0099ff' });
   }
   if (parseInt(Decode64(sessionStorage.getItem('showvencido'))) === 1) {
-    itens.push({ title: 'Valor Vencido', icon: <DollarSign />, value: moeda(valorvencido), color: '#ff3300' });
+    itens.push({ title: 'Títulos Vencidos', icon: <DollarSign />, value: moeda(valorvencido), color: '#ff3300' });
   }
   if (parseInt(Decode64(sessionStorage.getItem('showvencer'))) === 1) {
-    itens.push({ title: 'Valor à Vencer', icon: <DollarSign />, value: moeda(valorvencer), color: '#00cc00' });
+    itens.push({ title: 'Títulos à Vencer', icon: <DollarSign />, value: moeda(valorvencer), color: '#00cc00' });
   }
   if (parseInt(Decode64(sessionStorage.getItem('showdocsdia'))) === 1) {
     itens.push({ title: 'Docs. pagos em dia', icon: <CheckCircle />, value: pagosdia, color: '#0099ff' });
